@@ -14,7 +14,7 @@ CONTAINS
 
   END FUNCTION MorseEnergy
 
-!*
+!*****!*****!*****!*****!
 
   PURE REAL(8) FUNCTION HarmonicEnergy(K, r_0, r)
 
@@ -23,7 +23,7 @@ CONTAINS
     HarmonicEnergy = K * (r - r_0) * (r - r_0)
 
   END FUNCTION HarmonicEnergy
-
+!*
   PURE REAL(8) FUNCTION HarmonicFirstDerivative_dr(K, r_0, r)
 
   real(8), intent(in)  :: K, r_0, r
@@ -31,7 +31,7 @@ CONTAINS
     HarmonicFirstDerivative_dr = 2.0d0 * K * (r - r_0)
 
   END FUNCTION HarmonicFirstDerivative_dr
-
+!*
   PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr(K)
 
   real(8), intent(in)  :: K
@@ -39,7 +39,7 @@ CONTAINS
     HarmonicSecondDerivative_dr = 2.0d0 * K
 
   END FUNCTION HarmonicSecondDerivative_dr
-  
+!*  
   PURE REAL(8) FUNCTION HarmonicFirstDerivative_dr0(K, r0, r)
 
   real(8), intent(in) :: K, r0, r
@@ -47,7 +47,7 @@ CONTAINS
     HarmonicFirstDerivative_dr0 = (-2.0d0) * K * (r - r0)
 
   END FUNCTION HarmonicFirstDerivative_dr0
-  
+!*  
   PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0(K)
 
   real(8), intent(in)  :: K
@@ -55,7 +55,7 @@ CONTAINS
     HarmonicSecondDerivative_dr0 = 2.0d0 * K
 
   END FUNCTION HarmonicSecondDerivative_dr0
-  
+!*  
   PURE REAL(8) FUNCTION HarmonicFirstDerivative_dK(r0, r)
   
   real(8), intent(in)  :: r0, r
@@ -63,8 +63,22 @@ CONTAINS
     HarmonicFirstDerivative_dK = (r - r0) * (r - r0)
   
   END FUNCTION HarmonicFirstDerivative_dK
-  
 !*
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dK()
+  
+    HarmonicSecondDerivative_dK = 0.0d0
+  
+  END FUNCTION HarmonicSecondDerivative_dK
+!*  
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0dK(r0, r)
+  
+  real(8), intent(in) :: r0, r
+  
+    HarmonicSecondDerivative_dr0dK = (-2.0d0) * (r - r0)
+    
+  END FUNCTION HarmonicSecondDerivative_dr0dK
+  
+!*****!*****!*****!*****!
 
   PURE REAL(8) FUNCTION TorsionEnergy(V_n, n, omega, gamma)
   
@@ -75,7 +89,8 @@ CONTAINS
 
   END FUNCTION TorsionEnergy
   
-!*
+!*****!*****!*****!*****!
+
   PURE REAL(8) FUNCTION ElectrostaticEnergy(q_A,q_B,r)
 
   real(8), intent(in) :: q_A, q_B, r
