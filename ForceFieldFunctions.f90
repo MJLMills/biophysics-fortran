@@ -39,7 +39,31 @@ CONTAINS
     HarmonicSecondDerivative_dr = 2.0d0 * K
 
   END FUNCTION HarmonicSecondDerivative_dr
+  
+  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dr0(K, r0, r)
 
+  real(8), intent(in) :: K, r0, r
+  
+    HarmonicFirstDerivative_dr0 = (-2.0d0) * K * (r - r0)
+
+  END FUNCTION HarmonicFirstDerivative_dr0
+  
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0(K)
+
+  real(8), intent(in)  :: K
+
+    HarmonicSecondDerivative_dr = 2.0d0 * K
+
+  END FUNCTION HarmonicSecondDerivative_dr0
+  
+  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dK(r0, r)
+  
+  real(8), intent(in)  :: r0, r
+  
+    HarmonicFirstDerivative_dK = (r - r0) * (r - r0)
+  
+  END FUNCTION HarmonicFirstDerivative_dK
+  
 !*
 
   PURE REAL(8) FUNCTION TorsionEnergy(V_n, n, omega, gamma)
