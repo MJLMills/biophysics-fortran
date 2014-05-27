@@ -52,7 +52,7 @@ CONTAINS
 
   real(8), intent(in)  :: K
 
-    HarmonicSecondDerivative_dr = 2.0d0 * K
+    HarmonicSecondDerivative_dr0 = 2.0d0 * K
 
   END FUNCTION HarmonicSecondDerivative_dr0
   
