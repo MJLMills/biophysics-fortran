@@ -50,5 +50,14 @@ CONTAINS
     TorsionEnergy = 0.5d0 * V_n * (1.0d0 + cos(n * omega - gamma))
 
   END FUNCTION TorsionEnergy
+  
+!*
+  PURE REAL(8) FUNCTION ElectrostaticEnergy(q_A,q_B,r)
+
+  real(8), intent(in) :: q_A, q_B, r
+  
+    ElectrostaticEnergy = (q_A * q_B) / r;
+  
+  END FUNCTION ElectrostaticEnergy
 
 END MODULE ForceFieldFunctions
