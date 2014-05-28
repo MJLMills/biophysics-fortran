@@ -42,9 +42,9 @@ CONTAINS
 
   END FUNCTION HarmonicFirstDerivative_dr
 !*
-  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr(K), result(d)
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr(K, r_0, r) result(d)
 
-  real(8), intent(in)  :: K
+  real(8), intent(in)  :: K, r_0, r
   real(8) :: fd
 
     d = 2.0d0 * K
@@ -58,12 +58,12 @@ CONTAINS
 
   END FUNCTION HarmonicSecondDerivative_dr
 !*  
-  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dr0(K, r0, r), result(d)
+  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dr0(K, r_0, r) result(d)
 
-  real(8), intent(in) :: K, r0, r
+  real(8), intent(in) :: K, r_0, r
   real(8) :: fd
   
-    d = (-2.0d0) * K * (r - r0)
+    d = (-2.0d0) * K * (r - r_0)
 
     if (check .eqv. .true.) then
       fd = (HarmonicEnergy(K, r_0+h, r) - HarmonicEnergy(K, r_0-h, r)) / twoh
@@ -74,9 +74,9 @@ CONTAINS
 
   END FUNCTION HarmonicFirstDerivative_dr0
 !*  
-  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0(K), result(d)
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0(K,r_0,r) result(d)
 
-  real(8), intent(in)  :: K
+  real(8), intent(in)  :: K, r_0, r
   real(8) :: fd
 
     d = 2.0d0 * K
@@ -90,12 +90,12 @@ CONTAINS
     
   END FUNCTION HarmonicSecondDerivative_dr0
 !*  
-  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dK(r0, r), result(d)
+  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dK(K, r_0, r) result(d)
   
-  real(8), intent(in)  :: r0, r
+  real(8), intent(in)  :: K, r_0, r
   real(8) :: fd
   
-    d = (r - r0) * (r - r0)
+    d = (r - r_0) * (r - r_0)
   
     if (check .eqv. .true.) then
       fd = (HarmonicEnergy(K+h, r_0, r) - HarmonicEnergy(K-h, r_0, r)) / twoh
@@ -106,8 +106,9 @@ CONTAINS
   
   END FUNCTION HarmonicFirstDerivative_dK
 !*
-  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dK(), result(d)
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dK(K, r_0, r) result(d)
   
+  real(8), intent(in) :: K, r_0, r
   real(8) :: fd
 
     d = 0.0d0
@@ -121,11 +122,11 @@ CONTAINS
   
   END FUNCTION HarmonicSecondDerivative_dK
 !*  
-  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0dK(r0, r)
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0dK(r_0, r)
   
-  real(8), intent(in) :: r0, r
+  real(8), intent(in) :: r_0, r
   
-    HarmonicSecondDerivative_dr0dK = (-2.0d0) * (r - r0)
+    HarmonicSecondDerivative_dr0dK = (-2.0d0) * (r - r_0)
     
   END FUNCTION HarmonicSecondDerivative_dr0dK
   
