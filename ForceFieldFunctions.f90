@@ -1,7 +1,7 @@
 MODULE ForceFieldFunctions
 
 IMPLICIT NONE
-real(8), parameter :: h = 1.0d-5
+real(8), parameter :: h = 1.0d-5, twoh = 2.0d-5, hsq = 1.0d-10
 logical, parameter :: check = .true.
 
 CONTAINS
@@ -31,52 +31,93 @@ CONTAINS
   real(8), intent(in)  :: K, r_0, r
   real(8) :: fd
 
-  d = 2.0d0 * K * (r - r_0)
+    d = 2.0d0 * K * (r - r_0)
 
-  if (check .eqv. .true.) then
-    fd = (HarmonicEnergy(K, r_0, r+h) - HarmonicEnergy(K, r_0, r-h)) / (2.0d0 * h)
-    if (abs(d - fd) > h*h) then
-!      write(1,*) "Error: Innacurate Derivative"
+    if (check .eqv. .true.) then
+      fd = (HarmonicEnergy(K, r_0, r+h) - HarmonicEnergy(K, r_0, r-h)) / twoh
+      if (abs(d - fd) > hsq) then
+!        write(1,*) "Error: Innacurate Derivative"
+      endif
     endif
-  endif
 
   END FUNCTION HarmonicFirstDerivative_dr
 !*
-  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr(K)
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr(K), result(d)
 
   real(8), intent(in)  :: K
+  real(8) :: fd
 
-    HarmonicSecondDerivative_dr = 2.0d0 * K
+    d = 2.0d0 * K
+    
+    if (check .eqv. .true.) then
+      fd = (HarmonicEnergy(K, r_0, r+h) - (2.0d0 * HarmonicEnergy(K, r_0, r)) + HarmonicEnergy(K, r_0, r-h)) / hsq
+      if (abs(d - fd) > hsq) then
+!        write(1,*) "Error: Innacurate Derivative"
+      endif
+    endif
 
   END FUNCTION HarmonicSecondDerivative_dr
 !*  
-  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dr0(K, r0, r)
+  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dr0(K, r0, r), result(d)
 
   real(8), intent(in) :: K, r0, r
+  real(8) :: fd
   
-    HarmonicFirstDerivative_dr0 = (-2.0d0) * K * (r - r0)
+    d = (-2.0d0) * K * (r - r0)
+
+    if (check .eqv. .true.) then
+      fd = (HarmonicEnergy(K, r_0+h, r) - HarmonicEnergy(K, r_0-h, r)) / twoh
+      if (abs(d - fd) > hsq) then
+!        write(1,*) "Error: Innacurate Derivative"
+      endif
+    endif
 
   END FUNCTION HarmonicFirstDerivative_dr0
 !*  
-  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0(K)
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dr0(K), result(d)
 
   real(8), intent(in)  :: K
+  real(8) :: fd
 
-    HarmonicSecondDerivative_dr0 = 2.0d0 * K
+    d = 2.0d0 * K
 
+    if (check .eqv. .true.) then
+      fd = (HarmonicEnergy(K, r_0+h, r) - (2.0d0 * HarmonicEnergy(K, r_0, r)) + HarmonicEnergy(K, r_0-h, r)) / hsq
+      if (abs(d - fd) > hsq) then
+!        write(1,*) "Error: Innacurate Derivative"
+      endif
+    endif
+    
   END FUNCTION HarmonicSecondDerivative_dr0
 !*  
-  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dK(r0, r)
+  PURE REAL(8) FUNCTION HarmonicFirstDerivative_dK(r0, r), result(d)
   
   real(8), intent(in)  :: r0, r
+  real(8) :: fd
   
-    HarmonicFirstDerivative_dK = (r - r0) * (r - r0)
+    d = (r - r0) * (r - r0)
+  
+    if (check .eqv. .true.) then
+      fd = (HarmonicEnergy(K+h, r_0, r) - HarmonicEnergy(K-h, r_0, r)) / twoh
+      if (abs(d - fd) > hsq) then
+!        write(1,*) "Error: Innacurate Derivative"
+      endif
+    endif
   
   END FUNCTION HarmonicFirstDerivative_dK
 !*
-  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dK()
+  PURE REAL(8) FUNCTION HarmonicSecondDerivative_dK(), result(d)
   
-    HarmonicSecondDerivative_dK = 0.0d0
+  real(8) :: fd
+
+    d = 0.0d0
+    
+    if (check .eqv. .true.) then
+      fd = (HarmonicEnergy(K+h, r_0, r) - (2.0d0 * HarmonicEnergy(K, r_0, r)) + HarmonicEnergy(K-h, r_0, r)) / hsq
+      if (abs(d - fd) > hsq) then
+!        write(1,*) "Error: Innacurate Derivative"
+      endif
+    endif
   
   END FUNCTION HarmonicSecondDerivative_dK
 !*  
