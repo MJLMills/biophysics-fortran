@@ -29,7 +29,6 @@ CONTAINS
   PURE REAL(8) FUNCTION HarmonicFirstDerivative_dr(K, r_0, r) result(d)
 
   real(8), intent(in)  :: K, r_0, r
-  real(8), intent(out) :: d
   real(8) :: fd
 
   d = 2.0d0 * K * (r - r_0)
@@ -37,7 +36,7 @@ CONTAINS
   if (check .eqv. .true.) then
     fd = (HarmonicEnergy(K, r_0, r+h) - HarmonicEnergy(K, r_0, r-h)) / (2.0d0 * h)
     if (abs(d - fd) > h*h) then
-      write(*,*) "Error: Innacurate Derivative"
+!      write(1,*) "Error: Innacurate Derivative"
     endif
   endif
 
