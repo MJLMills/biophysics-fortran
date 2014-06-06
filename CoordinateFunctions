@@ -1,0 +1,8 @@
+MODULE CoordinateFunctions
+IMPLICIT NONE
+
+PURE REAL(8) FUNCTION Distance
+
+END FUNCTION Distance
+
+END MODULE CoordinateFunctions
