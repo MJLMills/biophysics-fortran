@@ -1,23 +1,36 @@
 MODULE CoordinateFunctions
 IMPLICIT NONE
 
+  CONTAINS
+  
   PURE REAL(8) FUNCTION EuclideanDistance(origin,coords,n) result(r)
 
   real(8), intent(in) :: origin(n), coords(n)
   integer :: n
 
-    r = dsqrt(pdotq(coords(:) - origin(:),n))
+    r = dsqrt(DotProduct(coords(:) - origin(:),n))
   
   END FUNCTION EuclideanDistance
 !*
-  PURE REAL(8) FUNCTION EuclideanDistance(vector,n) result(r)
+  PURE REAL(8) FUNCTION Angle(origin,a,b) result(theta)
+  
+  real(8), intent(in) :: a(3), b(3), origin(3)
+  real(8) :: ao(3), bo(3)
+
+    ao(:) = a(:) - o(:)
+    bo(:) = b(:) - o(:)
+    theta = dacos(DotProduct(ao, bo, 3) / (EuclideanNorm(a) * EuclideanNorm(b)))
+  
+  FUNCTION EuclideanDistance
+!*
+  PURE REAL(8) FUNCTION EuclideanNorm(vector,n) result(r)
 
   real(8), intent(in) :: vector(n)
   integer :: n, i
   
     r = dsqrt(pdotq(vector,vector,n))
   
-  END FUNCTION EuclideanDistance
+  END FUNCTION EuclideanNorm
 !*
   PURE REAL(8) FUNCTION DotProduct(p,q,n), result(pdotq)
   
@@ -40,5 +53,16 @@ IMPLICIT NONE
     enddo
   
   END FUNCTION DotProduct
+!*  
+  PURE REAL(8) FUNCTION CrossProduct(p,q), result(pcrossq)
+
+  real(8), intent(in) :: p(3), q(3)
+  real(8), intent(out) :: pcrossq(3)
+
+    pcrossq(1) = p(2)*q(3) - p(3)*q(2)
+    pcrossq(2) = p(3)*q(1) - p(1)*q(3)
+    pcrossq(3) = p(1)*q(2) - p(2)*q(1)
+
+  END FUNCTION CrossProduct
   
 END MODULE CoordinateFunctions
