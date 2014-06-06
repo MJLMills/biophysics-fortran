@@ -4,13 +4,9 @@ IMPLICIT NONE
   PURE REAL(8) FUNCTION EuclideanDistance(origin,coords,n) result(r)
 
   real(8), intent(in) :: origin(n), coords(n)
-  integer :: n, i
-  
-    do i = 1, n
-      r = r + (coords(i) - origin(i)) * (coords(i) - origin(i))
-    enddo
+  integer :: n
 
-    r = dsqrt(r)
+    r = dsqrt(pdotq(coords(:) - origin(:),n))
   
   END FUNCTION EuclideanDistance
 !*
@@ -19,21 +15,28 @@ IMPLICIT NONE
   real(8), intent(in) :: vector(n)
   integer :: n, i
   
-    do i = 1, n
-      r = r + vector(i) * vector(i)
-    enddo
-
-    r = dsqrt(r)
+    r = dsqrt(pdotq(vector,vector,n))
   
   END FUNCTION EuclideanDistance
-
+!*
   PURE REAL(8) FUNCTION DotProduct(p,q,n), result(pdotq)
   
   real(8), intent(in) :: p(n), q(n)
   integer :: n
   
     do i = 1, n
-      pdotq = pdotq + (p(i) * q(i))
+      pdotq = pdotq + ( p(i) * q(i) )
+    enddo
+  
+  END FUNCTION DotProduct
+!*  
+  PURE REAL(8) FUNCTION DotProduct(p,n), result pdotp
+  
+  real(8), intent(in) :: q(n)
+  integer :: n
+  
+    do i = 1, n
+      pdotp = pdotp + q(i) * q(i)
     enddo
   
   END FUNCTION DotProduct
