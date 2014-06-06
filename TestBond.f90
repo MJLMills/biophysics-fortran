@@ -5,9 +5,9 @@ IMPLICIT NONE
 Character(LENGTH=5), allocatable :: BondTypes(:)
 integer :: nAtoms
 integer, allocatable :: bondMatrix(:,:), BondIDs(:,:)
-integer :: i
+integer :: i, j
 real(8), allocatable :: bondEnergies(:), bondForceConstants(:), bondReferences(:)
-real(8), allocatable :: cartesianCoordinates(:,:)
+real(8), allocatable :: cartesianCoordinates(:,:), atomicForces(:,:)
 
 nAtoms = 2
 
@@ -35,10 +35,14 @@ bondTypes(1) = "HARM"
 bondEnergies(1) = 0.0d0
 
 do i = 1, nBonds
-
+  r = EuclideanDistance(cartesianCoordinates(BondIDs(i,1),:),cartesianCoordinates(BondIDs(i,2)),3)
   select case (trim(ladjust(BondTypes(i))))
   case ("HARM")
     bondEnergies(i) = HarmonicEnergy(bondForceConstants(i),)
+    do j = 1, 3
+      AtomicForces(BondIDs(i,1),j) += HarmonicEnergyDerivative(j)
+      AtomicForces(BondIDs(i,2),j) -= HarmonicEnergyDerivative(j)
+    enddo
   case ("MORSE")
     bondEnergies(i) = MorseEnergy()
   case default
