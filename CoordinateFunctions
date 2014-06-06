@@ -12,6 +12,15 @@ IMPLICIT NONE
   
   END FUNCTION EuclideanDistance
 !*
+  PURE REAL(8) FUNCTION EuclideanDistanceDerivative(origin,coords,n,i) result(der)
+  
+  real(8), intent(in) :: origin(3), coords(3)
+  integer :: n, i
+  
+    der = -1.0d0 / (2.0d0 * EuclideanDistance(coord(:)-origin(:))) * 2.0d0 * coord(i)-origin(i)
+  
+  END FUNCTION EuclideanDistanceDerivative
+!*
   PURE REAL(8) FUNCTION Angle(origin,a,b) result(theta)
   
   real(8), intent(in) :: a(3), b(3), origin(3)
