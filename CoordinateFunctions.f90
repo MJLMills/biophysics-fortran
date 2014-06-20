@@ -24,6 +24,28 @@ IMPLICIT NONE
 
   END FUNCTION DotProduct
 
+!*
+  PURE REAL(8) FUNCTION Angle(origin,a,b) result(theta)
+
+  real(8), intent(in) :: a(3), b(3), origin(3)
+  real(8) :: ao(3), bo(3)
+
+    ao(:) = a(:) - origin(:)
+    bo(:) = b(:) - origin(:)
+    theta = dacos(DotProduct(ao, bo, 3) / (EuclideanNorm(a) * EuclideanNorm(b)))
+
+  END FUNCTION Angle
+
+  PURE REAL(8) FUNCTION EuclideanNorm(vector,n) result(r)
+
+  real(8), intent(in) :: vector(n)
+  integer, intent(in) :: n
+  integer :: i
+
+    r = dsqrt(pdotq(vector,vector,n))
+
+  END FUNCTION EuclideanNorm
+
 END MODULE CoordinateFunctions
 
 !*

@@ -52,10 +52,14 @@ IMPLICIT NONE
 
   integer :: i
 
-do i = 1, nBonds
-  BondValues(i) = EuclideanDistance(CartCoords(BondIDs(i,1),:),&
-  &                                 CartCoords(BondIDs(i,2),:),3)
-enddo
+  do i = 1, nBonds
+    BondValues(i) = EuclideanDistance(CartCoords(BondIDs(i,1),:),&
+    &                                 CartCoords(BondIDs(i,2),:),3)
+  enddo
+
+  do i = 1, nAngles
+    AngleValues(i) = 
+  enddo
 
 END SUBROUTINE CartesianToRedundantInternal 
 
@@ -81,7 +85,6 @@ do i = 1, nBonds
     case ("HARM")
 
       bondEnergies(i) = HarmonicEnergy(bondForceConstants(i),bondReferences(i),BondValues(i))
-      write(*,*) bondEnergies(i)
       BondForces(i) =  HarmonicFirstDerivative_dr(bondForceConstants(i),&
       &                                           bondReferences(i),BondValues(i))
 
@@ -94,5 +97,17 @@ do i = 1, nBonds
 enddo
 
 END SUBROUTINE CalculateBondEnergy
+
+!*
+
+SUBROUTINE PrintEnergyAndForces
+
+  integer :: i
+
+  do i = 1, nBonds
+    write(*,*) "BOND ", i, " E = ", BondEnergies(i), " F = ", BondForces(i)
+  enddo  
+
+END SUBROUTINE PrintEnergyAndForces
 
 END MODULE Conformation
