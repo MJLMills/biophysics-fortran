@@ -1,5 +1,5 @@
 FC = gfortran
-FCFLAGS = -ffree-line-length-none
+FCFLAGS = -ffree-line-length-none -fmax-errors=0 -std=f95 -Wall
 #LDFLAGS -iexamplelib
 
 PROGRAMS = TestBond
