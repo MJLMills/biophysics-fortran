@@ -23,7 +23,7 @@ IMPLICIT NONE
 
     ao(:) = a(:) - origin(:)
     bo(:) = b(:) - origin(:)
-    theta = dacos(DotProduct(ao, bo, 3) / (EuclideanNorm(a,3) * EuclideanNorm(b,3)))
+    theta = DotProduct(ao, bo, 3) / (EuclideanNorm(ao,3) * EuclideanNorm(bo,3))
 
   END FUNCTION Angle
 

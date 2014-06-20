@@ -1,7 +1,5 @@
 PROGRAM TestBond
 
-  use ForceFieldFunctions
-  use CoordinateFunctions
   use ChemicalSystem
   use Conformation
 

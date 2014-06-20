@@ -6,9 +6,9 @@ PROGRAMS = TestBond
 
 all: $(PROGRAMS)
 
-TestBond.o: ForceFieldFunctions.o CoordinateFunctions.o ChemicalSystem.o Conformation.o
+TestBond.o: ChemicalSystem.o Conformation.o
 
-TestBond: ForceFieldFunctions.o CoordinateFunctions.o ChemicalSystem.o Conformation.o
+TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o
 
 Conformation.o: ChemicalSystem.o CoordinateFunctions.o ForceFieldFunctions.o
 
