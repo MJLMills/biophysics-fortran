@@ -9,13 +9,21 @@ real(8), allocatable :: AngleForceConstants(:,:), AngleReferences(:)
 
   CONTAINS
 
-SUBROUTINE AllocateArrays
+SUBROUTINE AllocateChemicalSystemArrays
 
     allocate(BondTypes(nBonds));   BondTypes(:)  = ""
     allocate(BondIDs(nBonds,2));   BondIDs(:,:)  = 0
     allocate(AngleTypes(nAngles)); AngleTypes(:) = ""
     allocate(AngleIDs(nAngles,3)); AngleIDs(:,:) = 0
 
-END SUBROUTINE AllocateArrays
+END SUBROUTINE AllocateChemicalSystemArrays
+
+SUBROUTINE CreateChemicalSystem(nAtoms,nBonds,nAngles)
+
+    integer :: nAtoms, nBonds, nAngles
+
+    call AllocateChemicalSystemArrays
+
+END SUBROUTINE CreateChemicalSystem
 
 END MODULE ChemicalSystem
