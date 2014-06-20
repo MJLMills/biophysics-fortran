@@ -58,7 +58,9 @@ IMPLICIT NONE
   enddo
 
   do i = 1, nAngles
-    AngleValues(i) = 
+    AngleValues(i) = Angle(CartCoords(AngleIDs(1,2),:),&
+    &                      CartCoords(AngleIDs(1,1),:),&
+    &                      CartCoords(AngleIDs(1,3),:))
   enddo
 
 END SUBROUTINE CartesianToRedundantInternal 
@@ -69,7 +71,11 @@ SUBROUTINE PrintRedundantCoordinates
   integer :: i
 
   do i = 1, nBonds
-    write(*,*) "BOND ", i, " = ", BondValues(i)
+    write(*,*) "BOND  ", i, " = ", BondValues(i)
+  enddo
+
+  do i = 1, nAngles
+    write(*,*) "ANGLE ", i, " = ", AngleValues(i)
   enddo
 
 END SUBROUTINE PrintRedundantCoordinates

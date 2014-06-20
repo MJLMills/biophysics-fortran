@@ -2,29 +2,20 @@ MODULE CoordinateFunctions
 IMPLICIT NONE
 
   CONTAINS
+
+!*
   
   PURE REAL(8) FUNCTION EuclideanDistance(origin,coords,n) result(r)
 
   real(8), intent(in) :: origin(n), coords(n)
   integer, intent(in) :: n
 
-    r = dsqrt(DotProduct(coords(:) - origin(:),n))
+    r = dsqrt(DotProduct(coords(:) - origin(:),coords(:) - origin(:),n))
   
   END FUNCTION EuclideanDistance
 
-  PURE REAL(8) FUNCTION DotProduct(p,n) result(pdotp)
-
-  real(8), intent(in) :: p(n)
-  integer, intent(in) :: n
-  integer :: i
-
-    do i = 1, n
-      pdotp = pdotp + p(i) * p(i)
-    enddo
-
-  END FUNCTION DotProduct
-
 !*
+
   PURE REAL(8) FUNCTION Angle(origin,a,b) result(theta)
 
   real(8), intent(in) :: a(3), b(3), origin(3)
@@ -32,9 +23,11 @@ IMPLICIT NONE
 
     ao(:) = a(:) - origin(:)
     bo(:) = b(:) - origin(:)
-    theta = dacos(DotProduct(ao, bo, 3) / (EuclideanNorm(a) * EuclideanNorm(b)))
+    theta = dacos(DotProduct(ao, bo, 3) / (EuclideanNorm(a,3) * EuclideanNorm(b,3)))
 
   END FUNCTION Angle
+
+!*
 
   PURE REAL(8) FUNCTION EuclideanNorm(vector,n) result(r)
 
@@ -42,13 +35,28 @@ IMPLICIT NONE
   integer, intent(in) :: n
   integer :: i
 
-    r = dsqrt(pdotq(vector,vector,n))
+    r = dsqrt(DotProduct(vector,vector,n))
 
   END FUNCTION EuclideanNorm
+
+!*
+
+  PURE REAL(8) FUNCTION DotProduct(p,q,n) result(pdotq)
+
+  real(8), intent(in) :: p(n), q(n)
+  integer, intent(in) :: n
+  integer :: i
+
+    do i = 1, n
+      pdotq = pdotq + ( p(i) * q(i) )
+    enddo
+
+  END FUNCTION DotProduct
 
 END MODULE CoordinateFunctions
 
 !*
+
 !  PURE REAL(8) FUNCTION EuclideanDistanceDerivative(origin,coords,n,i) result(der)
 !  
 !  real(8), intent(in) :: origin(3), coords(3)
@@ -57,38 +65,8 @@ END MODULE CoordinateFunctions
 !    der = -1.0d0 / (2.0d0 * EuclideanDistance(coord(:)-origin(:))) * 2.0d0 * coord(i)-origin(i)
 !  
 !  END FUNCTION EuclideanDistanceDerivative
-!*
-!  PURE REAL(8) FUNCTION Angle(origin,a,b) result(theta)
-!  
-!  real(8), intent(in) :: a(3), b(3), origin(3)
-!  real(8) :: ao(3), bo(3)
-!
-!    ao(:) = a(:) - o(:)
-!    bo(:) = b(:) - o(:)
-!    theta = dacos(DotProduct(ao, bo, 3) / (EuclideanNorm(a) * EuclideanNorm(b)))
   
-!  FUNCTION EuclideanDistance
 !*
-!  PURE REAL(8) FUNCTION EuclideanNorm(vector,n) result(r)
-
-!  real(8), intent(in) :: vector(n)
-!  integer :: n, i
-!  
-!    r = dsqrt(pdotq(vector,vector,n))
-  
-!  END FUNCTION EuclideanNorm
-!*
-!  PURE REAL(8) FUNCTION DotProduct(p,q,n), result(pdotq)
-!  
-!  real(8), intent(in) :: p(n), q(n)
-!  integer :: n
-!  
-!    do i = 1, n
-!      pdotq = pdotq + ( p(i) * q(i) )
-!    enddo
-!  
-!  END FUNCTION DotProduct
-!*  
 !  PURE REAL(8) FUNCTION CrossProduct(p,q), result(pcrossq)
 !
 !  real(8), intent(in) :: p(3), q(3)
