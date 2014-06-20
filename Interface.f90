@@ -3,7 +3,7 @@ PROGRAM Interface
 IMPLICIT NONE
 
 integer :: nSteps, step
-character :: calculationArray(:)
+character(len=8), allocatable :: CalculationArray(:)
 
 !Determine the calculation type array requested, or expand a single keyword to an array.
 do step=1,nSteps

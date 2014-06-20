@@ -1,27 +1,86 @@
 MODULE Conformation
-use ChemicalSystem
+
+  use ChemicalSystem
+  use CoordinateFunctions
+  use ForceFieldFunctions
+
 IMPLICIT NONE
 
-real(8), allocatable :: CartesianCoordinates(:,:)
-real(8), allocatable :: BondEnergies(:), AngleEnergies(:)
-real(8), allocatable :: BondValues(:), AngleValues(:)
-real(8), allocatable :: BondForces(:), AngleForces(:), AtomicForces(:,:)
+  real(8), allocatable :: CartCoords(:,:)
+  real(8), allocatable :: BondEnergies(:), AngleEnergies(:)
+  real(8), allocatable :: BondValues(:), AngleValues(:)
+  real(8), allocatable :: BondForces(:), AngleForces(:), AtomicForces(:,:)
+  logical :: MemoryAllocated = .FALSE.
 
 CONTAINS
 
-SUBROUTINE AllocateConformationArrays
+SUBROUTINE CreateConformation
 
-    allocate(CartesianCoordinates(nAtoms,3)); CartesianCoordinates(:,:) = 0.0d0
-    allocate(BondValues(nBonds));             BondValues(:)             = 0.0d0
-    allocate(AngleValues(nAngles));           AngleValues(:)            = 0.0d0
+    if (.NOT. allocated(BondTypes))     then; allocate(BondTypes(nBonds))     ; BondTypes(:)      = ""   ; endif
+    if (.NOT. allocated(CartCoords))    then; allocate(CartCoords(nAtoms,3))  ; CartCoords(:,:)   = 0.0d0; endif
+    if (.NOT. allocated(BondValues))    then; allocate(BondValues(nBonds))    ; BondValues(:)     = 0.0d0; endif
+    if (.NOT. allocated(AngleValues))   then; allocate(AngleValues(nAngles))  ; AngleValues(:)    = 0.0d0; endif
+    if (.NOT. allocated(BondEnergies))  then; allocate(BondEnergies(nBonds))  ; BondEnergies(:)   = 0.0d0; endif
+    if (.NOT. allocated(AngleEnergies)) then; allocate(AngleEnergies(nAngles)); AngleEnergies(:)  = 0.0d0; endif
+    if (.NOT. allocated(AtomicForces))  then; allocate(AtomicForces(nAtoms,3)); AtomicForces(:,:) = 0.0d0; endif
+    if (.NOT. allocated(BondForces))    then; allocate(BondForces(nBonds))    ; BondForces(:)     = 0.0d0; endif
+    if (.NOT. allocated(AngleForces))   then; allocate(AngleForces(nAngles))  ; AngleForces(:)    = 0.0d0; endif
 
-    allocate(BondEnergies(nBonds));           BondEnergies(:)           = 0.0d0
-    allocate(AngleEnergies(nAngles));         AngleEnergies(:)          = 0.0d0
+    MemoryAllocated = .TRUE.
 
-    allocate(AtomicForces(nAtoms,3));         AtomicForces(:,:)         = 0.0d0
-    allocate(BondForces(nBonds));             BondForces(:)             = 0.0d0
-    allocate(AngleForces(nAngles));           AngleForces(:)            = 0.0d0
+END SUBROUTINE CreateConformation
 
-END SUBROUTINE AllocateConformationArrays
+SUBROUTINE DestroyConformation
+
+    if (allocated(BondTypes))     then; deallocate(BondTypes)    ; BondTypes(:)      = ""   ; endif
+    if (allocated(CartCoords))    then; deallocate(CartCoords)   ; CartCoords(:,:)   = 0.0d0; endif
+    if (allocated(BondValues))    then; deallocate(BondValues)   ; BondValues(:)     = 0.0d0; endif
+    if (allocated(AngleValues))   then; deallocate(AngleValues)  ; AngleValues(:)    = 0.0d0; endif
+    if (allocated(BondEnergies))  then; deallocate(BondEnergies) ; BondEnergies(:)   = 0.0d0; endif
+    if (allocated(AngleEnergies)) then; deallocate(AngleEnergies); AngleEnergies(:)  = 0.0d0; endif
+    if (allocated(AtomicForces))  then; deallocate(AtomicForces) ; AtomicForces(:,:) = 0.0d0; endif
+    if (allocated(BondForces))    then; deallocate(BondForces)   ; BondForces(:)     = 0.0d0; endif
+    if (allocated(AngleForces))   then; deallocate(AngleForces)  ; AngleForces(:)    = 0.0d0; endif
+
+    MemoryAllocated = .FALSE.
+
+END SUBROUTINE DestroyConformation
+
+!*
+SUBROUTINE CartesianToRedundantInternal
+
+integer :: i
+
+do i = 1, nBonds
+  BondValues(i) = EuclideanDistance(CartCoords(BondIDs(i,1),:),&
+  &                                 CartCoords(BondIDs(i,1),:),3)
+enddo
+
+END SUBROUTINE CartesianToRedundantInternal 
+!*
+SUBROUTINE CalculateBondEnergy
+
+integer :: i
+
+do i = 1, nBonds
+
+  select case (trim(adjustl(BondTypes(i))))
+
+  case ("HARM")
+
+    bondEnergies(i) = HarmonicEnergy(bondForceConstants(i),bondReferences(i),BondValues(i))
+    write(*,*) bondEnergies(i)
+    BondForces(i) =  HarmonicFirstDerivative_dr(bondForceConstants(i),&
+    &                                           bondReferences(i),BondValues(i))
+
+  case default
+
+    write(*,*) "Bond Type is Unknown"
+
+  end select
+
+enddo
+
+END SUBROUTINE CalculateBondEnergy
 
 END MODULE Conformation
