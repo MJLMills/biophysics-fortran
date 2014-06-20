@@ -15,8 +15,8 @@ IMPLICIT NONE
 CONTAINS
 
 SUBROUTINE CreateConformation
+IMPLICIT NONE
 
-    if (.NOT. allocated(BondTypes))     then; allocate(BondTypes(nBonds))     ; BondTypes(:)      = ""   ; endif
     if (.NOT. allocated(CartCoords))    then; allocate(CartCoords(nAtoms,3))  ; CartCoords(:,:)   = 0.0d0; endif
     if (.NOT. allocated(BondValues))    then; allocate(BondValues(nBonds))    ; BondValues(:)     = 0.0d0; endif
     if (.NOT. allocated(AngleValues))   then; allocate(AngleValues(nAngles))  ; AngleValues(:)    = 0.0d0; endif
@@ -31,16 +31,16 @@ SUBROUTINE CreateConformation
 END SUBROUTINE CreateConformation
 
 SUBROUTINE DestroyConformation
+IMPLICIT NONE
 
-    if (allocated(BondTypes))     then; deallocate(BondTypes)    ; BondTypes(:)      = ""   ; endif
-    if (allocated(CartCoords))    then; deallocate(CartCoords)   ; CartCoords(:,:)   = 0.0d0; endif
-    if (allocated(BondValues))    then; deallocate(BondValues)   ; BondValues(:)     = 0.0d0; endif
-    if (allocated(AngleValues))   then; deallocate(AngleValues)  ; AngleValues(:)    = 0.0d0; endif
-    if (allocated(BondEnergies))  then; deallocate(BondEnergies) ; BondEnergies(:)   = 0.0d0; endif
-    if (allocated(AngleEnergies)) then; deallocate(AngleEnergies); AngleEnergies(:)  = 0.0d0; endif
-    if (allocated(AtomicForces))  then; deallocate(AtomicForces) ; AtomicForces(:,:) = 0.0d0; endif
-    if (allocated(BondForces))    then; deallocate(BondForces)   ; BondForces(:)     = 0.0d0; endif
-    if (allocated(AngleForces))   then; deallocate(AngleForces)  ; AngleForces(:)    = 0.0d0; endif
+    if (allocated(CartCoords))    then; deallocate(CartCoords)   ; endif
+    if (allocated(BondValues))    then; deallocate(BondValues)   ; endif
+    if (allocated(AngleValues))   then; deallocate(AngleValues)  ; endif
+    if (allocated(BondEnergies))  then; deallocate(BondEnergies) ; endif
+    if (allocated(AngleEnergies)) then; deallocate(AngleEnergies); endif
+    if (allocated(AtomicForces))  then; deallocate(AtomicForces) ; endif
+    if (allocated(BondForces))    then; deallocate(BondForces)   ; endif
+    if (allocated(AngleForces))   then; deallocate(AngleForces)  ; endif
 
     MemoryAllocated = .FALSE.
 
@@ -48,15 +48,27 @@ END SUBROUTINE DestroyConformation
 
 !*
 SUBROUTINE CartesianToRedundantInternal
+IMPLICIT NONE
 
-integer :: i
+  integer :: i
 
 do i = 1, nBonds
   BondValues(i) = EuclideanDistance(CartCoords(BondIDs(i,1),:),&
-  &                                 CartCoords(BondIDs(i,1),:),3)
+  &                                 CartCoords(BondIDs(i,2),:),3)
 enddo
 
 END SUBROUTINE CartesianToRedundantInternal 
+
+!*
+SUBROUTINE PrintRedundantCoordinates
+
+  integer :: i
+
+  do i = 1, nBonds
+    write(*,*) "BOND ", i, " = ", BondValues(i)
+  enddo
+
+END SUBROUTINE PrintRedundantCoordinates
 !*
 SUBROUTINE CalculateBondEnergy
 
@@ -66,16 +78,16 @@ do i = 1, nBonds
 
   select case (trim(adjustl(BondTypes(i))))
 
-  case ("HARM")
+    case ("HARM")
 
-    bondEnergies(i) = HarmonicEnergy(bondForceConstants(i),bondReferences(i),BondValues(i))
-    write(*,*) bondEnergies(i)
-    BondForces(i) =  HarmonicFirstDerivative_dr(bondForceConstants(i),&
-    &                                           bondReferences(i),BondValues(i))
+      bondEnergies(i) = HarmonicEnergy(bondForceConstants(i),bondReferences(i),BondValues(i))
+      write(*,*) bondEnergies(i)
+      BondForces(i) =  HarmonicFirstDerivative_dr(bondForceConstants(i),&
+      &                                           bondReferences(i),BondValues(i))
 
-  case default
+    case default
 
-    write(*,*) "Bond Type is Unknown"
+      write(*,*) "Bond Type is Unknown"
 
   end select
 

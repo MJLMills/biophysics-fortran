@@ -16,4 +16,14 @@ bondTypes(1) = "HARM"
 bondForceConstants(1) = 50.0d0
 bondReferences(1)     =  1.2d0
 
+call CreateConformation
+
+CartCoords(2,1) = 1.0d0
+call CartesianToRedundantInternal
+call PrintRedundantCoordinates
+call CalculateBondEnergy
+
+call DestroyConformation
+call DestroyChemicalSystem
+
 END PROGRAM TestBond
