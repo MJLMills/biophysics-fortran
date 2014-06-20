@@ -106,13 +106,43 @@ END SUBROUTINE CalculateBondEnergy
 
 !*
 
+SUBROUTINE CalculateAngleEnergy
+IMPLICIT NONE
+
+  integer :: i
+  do i = 1, nAngles
+
+    select case (trim(adjustl(AngleTypes(i))))
+
+      case ("HARM")
+
+        AngleEnergies(i) = HarmonicEnergy(AngleForceConstants(i),AngleReferences(i),AngleValues(i))
+        AngleForces(i)   = HarmonicFirstDerivative_dr(AngleForceConstants(i),&
+        &                                           AngleReferences(i),AngleValues(i))
+
+      case default
+
+        write(*,*) "Angle Type is Unknown"
+
+    end select
+
+  enddo
+
+END SUBROUTINE CalculateAngleEnergy
+
+!*
+
 SUBROUTINE PrintEnergyAndForces
 
   integer :: i
 
   do i = 1, nBonds
-    write(*,*) "BOND ", i, " E = ", BondEnergies(i), " F = ", BondForces(i)
-  enddo  
+    write(*,*) "BOND  ", i, " E = ", BondEnergies(i),  " F = ", BondForces(i)
+  enddo
+
+  do i = 1, nAngles
+    write(*,*) "ANGLE ", i, " E = ", AngleEnergies(i), " F = ", AngleForces(i)
+  enddo
 
 END SUBROUTINE PrintEnergyAndForces
 

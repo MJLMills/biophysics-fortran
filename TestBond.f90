@@ -27,11 +27,12 @@ call CreateConformation
 
 CartCoords(1,1) = 0.00d0; CartCoords(1,2) = 0.00d0; CartCoords(1,3) = 0.0d0;
 CartCoords(2,1) = 0.95d0; CartCoords(2,2) = 0.00d0; CartCoords(2,3) = 0.0d0;
-CartCoords(3,1) = 0.72d0; CartCoords(3,2) = 0.54d0; CartCoords(3,3) = 0.0d0;
+CartCoords(3,1) = 1.18786100427d0; CartCoords(3,2) = 0.91974025825d0; CartCoords(3,3) = 0.0d0;
 
 call CartesianToRedundantInternal
 call PrintRedundantCoordinates
 call CalculateBondEnergy
+call CalculateAngleEnergy
 call PrintEnergyAndForces
 
 call DestroyConformation

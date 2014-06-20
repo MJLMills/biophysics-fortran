@@ -23,7 +23,8 @@ IMPLICIT NONE
 
     ao(:) = a(:) - origin(:)
     bo(:) = b(:) - origin(:)
-    theta = DotProduct(ao, bo, 3) / (EuclideanNorm(ao,3) * EuclideanNorm(bo,3))
+
+    theta = dacos(DotProduct(ao, bo, 3) / (EuclideanNorm(ao,3) * EuclideanNorm(bo,3)))
 
   END FUNCTION Angle
 
@@ -33,7 +34,6 @@ IMPLICIT NONE
 
   real(8), intent(in) :: vector(n)
   integer, intent(in) :: n
-  integer :: i
 
     r = dsqrt(DotProduct(vector,vector,n))
 
@@ -46,6 +46,8 @@ IMPLICIT NONE
   real(8), intent(in) :: p(n), q(n)
   integer, intent(in) :: n
   integer :: i
+
+  pdotq = 0.0d0
 
     do i = 1, n
       pdotq = pdotq + ( p(i) * q(i) )
