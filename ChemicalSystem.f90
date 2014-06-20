@@ -1,9 +1,21 @@
 MODULE ChemicalSystem
 IMPLICIT NONE
 
-Character(LEN=4), allocatable :: BondTypes(:), AngleTypes(:)
+character(LEN=4), allocatable :: BondTypes(:), AngleTypes(:)
 integer :: nAtoms, nBonds, nAngles, nTorsions
-real(8), allocatable :: BondIDs(:,:), BondForceConstants(:), BondReferences(:)
-real(8), allocatable :: AngleIDs(:,:), AngleForceConstants(:,:), AngleReferences(:)
+integer, allocatable :: BondIDs(:,:), AngleIDs(:,:)
+real(8), allocatable :: BondForceConstants(:), BondReferences(:)
+real(8), allocatable :: AngleForceConstants(:,:), AngleReferences(:)
+
+  CONTAINS
+
+SUBROUTINE AllocateArrays
+
+    allocate(BondTypes(nBonds));   BondTypes(:)  = ""
+    allocate(BondIDs(nBonds,2));   BondIDs(:,:)  = 0
+    allocate(AngleTypes(nAngles)); AngleTypes(:) = ""
+    allocate(AngleIDs(nAngles,3)); AngleIDs(:,:) = 0
+
+END SUBROUTINE AllocateArrays
 
 END MODULE ChemicalSystem
