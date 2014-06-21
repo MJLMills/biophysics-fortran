@@ -8,10 +8,11 @@ all: $(PROGRAMS)
 
 TestBond.o: ChemicalSystem.o Conformation.o
 
-TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o
+TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o VectorMath.o
 
 Conformation.o: ChemicalSystem.o CoordinateFunctions.o ForceFieldFunctions.o
 
+CoordinateFunctions.o: VectorMath.o
 %: %.o
 	$(FC) $(FCFLAGS) -o $@ $^ $(LDFLAGS)
 
