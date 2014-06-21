@@ -8,7 +8,7 @@ IMPLICIT NONE
 
 !*
   
-  PURE REAL(8) FUNCTION EuclideanDistance(origin,coords,n) result(r)
+  PURE REAL(8) FUNCTION EuclideanDistance(origin,coords,n) result(r); IMPLICIT NONE
 
   integer, intent(in) :: n
   real(8), intent(in) :: origin(n), coords(n)
@@ -19,7 +19,7 @@ IMPLICIT NONE
 
 !*
 
-  PURE REAL(8) FUNCTION Angle(origin,a,b) result(theta)
+  PURE REAL(8) FUNCTION Angle(origin,a,b) result(theta); IMPLICIT NONE
 
   real(8), intent(in) :: a(3), b(3), origin(3)
   real(8) :: ao(3), bo(3)
@@ -33,8 +33,7 @@ IMPLICIT NONE
 
 !*
 
-  PURE REAL(8) FUNCTION TorsionAngle(vec_i,vec_j,vec_k,vec_l) result(phi)
-  IMPLICIT NONE
+  PURE REAL(8) FUNCTION TorsionAngle(vec_i,vec_j,vec_k,vec_l) result(phi); IMPLICIT NONE
 
   real(8), intent(in) :: vec_i(3), vec_j(3), vec_k(3), vec_l(3)
   double precision norm_vec_ij(3), norm_vec_jk(3), norm_vec_kl(3), Cross_onetwo(3), Cross_twothree(3)
@@ -65,7 +64,7 @@ IMPLICIT NONE
 
 !*
 
-  PURE REAL(8) FUNCTION EuclideanDistanceDerivative(origin,coords,n,i) result(der)
+  PURE REAL(8) FUNCTION EuclideanDistanceDerivative(origin,coords,n,i) result(der); IMPLICIT NONE
   
   integer, intent(in) :: n, i
   real(8), intent(in) :: origin(n), coords(n)
