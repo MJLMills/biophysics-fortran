@@ -7,10 +7,10 @@ IMPLICIT NONE
   
   PURE REAL(8) FUNCTION EuclideanDistance(origin,coords,n) result(r)
 
-  real(8), intent(in) :: origin(n), coords(n)
   integer, intent(in) :: n
+  real(8), intent(in) :: origin(n), coords(n)
 
-    r = dsqrt(DotProduct(coords(:) - origin(:),coords(:) - origin(:),n))
+    r = 0.0d0; r = dsqrt(DotProduct(coords(:) - origin(:),coords(:) - origin(:),n))
   
   END FUNCTION EuclideanDistance
 
@@ -24,6 +24,7 @@ IMPLICIT NONE
     ao(:) = a(:) - origin(:)
     bo(:) = b(:) - origin(:)
 
+    theta = 0.0d0;
     theta = dacos(DotProduct(ao, bo, 3) / (EuclideanNorm(ao,3) * EuclideanNorm(bo,3)))
 
   END FUNCTION Angle
@@ -32,10 +33,10 @@ IMPLICIT NONE
 
   PURE REAL(8) FUNCTION EuclideanNorm(vector,n) result(r)
 
-  real(8), intent(in) :: vector(n)
   integer, intent(in) :: n
+  real(8), intent(in) :: vector(n)
 
-    r = dsqrt(DotProduct(vector,vector,n))
+    r = 0.0d0; r = dsqrt(DotProduct(vector,vector,n))
 
   END FUNCTION EuclideanNorm
 
@@ -43,8 +44,8 @@ IMPLICIT NONE
 
   PURE REAL(8) FUNCTION DotProduct(p,q,n) result(pdotq)
 
-  real(8), intent(in) :: p(n), q(n)
   integer, intent(in) :: n
+  real(8), intent(in) :: p(n), q(n)
   integer :: i
 
   pdotq = 0.0d0
