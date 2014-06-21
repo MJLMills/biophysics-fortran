@@ -18,7 +18,7 @@ AngleIDs(1,3) = 3
 
 BondTypes(:) = "HARM"
 BondForceConstants(:)  = 50.00d0
-BondReferences(:)      =  0.95d0
+BondReferences(:)      =  0.92d0
 AngleTypes(:) = "HARM"
 AngleForceConstants(:) = 75.00d0
 AngleReferences(:)     =  1.82d0

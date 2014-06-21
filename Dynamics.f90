@@ -7,10 +7,10 @@ IMPLICIT NONE
 
   CONTAINS
 
-SUBROUTINE VelocityVerlet
+SUBROUTINE VelocityVerlet(timestep,maxsteps)
 IMPLICIT NONE
 
-integer :: tstep, maxSteps
+integer, intent(in) :: tstep, maxSteps
 real(8), allocatable :: velocities(:), accelerations(:), nextPositions(:), nextAccelerations(:)
 real(8) :: timestep, half_sq_timestep, half_timestep
 
@@ -26,12 +26,21 @@ if (.NOT. allocated(nextPositions))     then; allocate(nextPositions(3*nAtoms));
 !  accelerations = CalculateAccelerations !IMPLEMENT
 !  velocities = generateRandom !IMPLEMENT
 
+    write(*,*) "Timestep    Time"
+
   do tstep = 1, maxSteps
+
+    write(*,*) tstep, tstep*timestep
+    call WriteData
 
     nextPositions(:) = timestep*velocities(:) + half_sq_timestep * accelerations(:)
     call UpdateCartesians
 !    nextAccelerations = CalculateAccelerations THIS ROUTINE TO BE ADDED TO CONFORMATION.F90
-     nextVelocities(:) = velocities(:) + half_timestep * (accelerations(:) + nextAccelerations(:))
+    nextVelocities(:) = velocities(:) + half_timestep * (accelerations(:) + nextAccelerations(:))
+
+    positions(:)     = nextPositions(:)     ; nextPositions(:)     = 0.0d0
+    velocities(:)    = nextVelocities(:)    ; nextVelocities(:)    = 0.0d0
+    accelerations(:) = nextAccelerations(:) ; nextAccelerations(:) = 0.0d0
 
   enddo
 
@@ -54,11 +63,14 @@ integer :: atom, cart, j
 
 END SUBROUTINE UpdateCartesians
 
+SUBROUTINE WriteData
+
+END SUBROUTINE WriteData
+
 !Velocity Verlet (better than leapfrog (gives r(t), v(t), a(t)) and Verlet (includes v(t) and no differencing of big numbers)
 
 !A) r(t+dt) = r(t) + dt * v(t) + 1/2 * dt^2 * a(t)
 !B) v(t+dt) = v(t) + 1/2 * dt * [a(t) + a(t+dt)]
-
 !0) Initialise: source r(0), guess v(0) and compute a(0) from r(0)
 
 !1) Write properties at t

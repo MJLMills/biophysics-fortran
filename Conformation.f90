@@ -9,7 +9,8 @@ IMPLICIT NONE
   real(8), allocatable :: CartCoords(:,:)
   real(8), allocatable :: BondEnergies(:), AngleEnergies(:)
   real(8), allocatable :: BondValues(:), AngleValues(:)
-  real(8), allocatable :: BondForces(:), AngleForces(:), AtomicForces(:,:)
+  real(8), allocatable :: BondForces(:), AngleForces(:), AtomicForces(:,:), AtomicAccelerations(:,:)
+  real(8)              :: TotalBondEnergy, TotalAngleEnergy
   logical :: MemoryAllocated = .FALSE.
 
 CONTAINS
@@ -47,6 +48,7 @@ IMPLICIT NONE
 END SUBROUTINE DestroyConformation
 
 !*
+
 SUBROUTINE CartesianToRedundantInternal
 IMPLICIT NONE
 
@@ -63,7 +65,7 @@ IMPLICIT NONE
     &                      CartCoords(AngleIDs(1,3),:))
   enddo
 
-END SUBROUTINE CartesianToRedundantInternal 
+END SUBROUTINE CartesianToRedundantInternal
 
 !*
 SUBROUTINE PrintRedundantCoordinates
@@ -71,18 +73,20 @@ SUBROUTINE PrintRedundantCoordinates
   integer :: i
 
   do i = 1, nBonds
-    write(*,*) "BOND  ", i, " = ", BondValues(i)
+    write(*,'(A6,I4,A3,F9.6)') "BOND  ", i, " = ", BondValues(i)
   enddo
 
   do i = 1, nAngles
-    write(*,*) "ANGLE ", i, " = ", AngleValues(i)
+    write(*,'(A6,I4,A3,F9.6)') "ANGLE ", i, " = ", AngleValues(i)
   enddo
 
 END SUBROUTINE PrintRedundantCoordinates
 !*
 SUBROUTINE CalculateBondEnergy
 
-integer :: i
+integer :: i, j
+
+TotalBondEnergy = 0.0d0
 
 do i = 1, nBonds
 
@@ -100,9 +104,43 @@ do i = 1, nBonds
 
   end select
 
+  do j = 1, 3
+    AtomicForces(BondIDs(i,1),j) = AtomicForces(BondIDs(i,1),j) + &
+&                                  BondEnergies(i) * EuclideanDistanceDerivative(CartCoords(BondIDs(i,1),:),CartCoords(BondIDs(i,2),:),3,j)
+    AtomicForces(BondIDs(i,2),j) = AtomicForces(BondIDs(i,1),j) + &
+&                                  BondEnergies(i) * EuclideanDistanceDerivative(CartCoords(BondIDs(i,2),:),CartCoords(BondIDs(i,1),:),3,j)
+  enddo
+  
+  TotalBondEnergy = TotalBondEnergy + bondEnergies(i)
+
 enddo
 
 END SUBROUTINE CalculateBondEnergy
+
+!*
+
+SUBROUTINE CalculateAccelerations
+IMPLICIT NONE
+
+integer :: atom, cart
+
+!This has to fill the array AtomicAccelerations for the dynamics runner
+
+call CalculateBondEnergy !gets bond energies and internal forces
+call CalculateAngleEnergy ! gets angle energies and internal forces
+
+do atom = 1, nAtoms
+
+  do cart = 1, 3
+
+    Write(*,*) "FORCE ON ", atom, " ALONG ", cart, " = ", AtomicForces(atom,cart)
+
+  enddo
+
+enddo
+
+
+END SUBROUTINE CalculateAccelerations
 
 !*
 
@@ -110,6 +148,9 @@ SUBROUTINE CalculateAngleEnergy
 IMPLICIT NONE
 
   integer :: i
+
+  TotalAngleEnergy = 0.0d0
+
   do i = 1, nAngles
 
     select case (trim(adjustl(AngleTypes(i))))
@@ -126,6 +167,12 @@ IMPLICIT NONE
 
     end select
 
+  TotalAngleEnergy = TotalAngleEnergy + AngleEnergies(i)
+
+    do cart = 1, 3
+!      AtomicForces(AngleIDs(i,1)) = AtomicForces(AngleIDs(i,1)) + AngleForces(i)
+    enddo
+
   enddo
 
 END SUBROUTINE CalculateAngleEnergy
@@ -137,11 +184,11 @@ SUBROUTINE PrintEnergyAndForces
   integer :: i
 
   do i = 1, nBonds
-    write(*,*) "BOND  ", i, " E = ", BondEnergies(i),  " F = ", BondForces(i)
+    write(*,'(A6,I4,A5,F9.6,A5,F9.6)') "BOND  ", i, " E = ", BondEnergies(i),  " F = ", BondForces(i)
   enddo
 
   do i = 1, nAngles
-    write(*,*) "ANGLE ", i, " E = ", AngleEnergies(i), " F = ", AngleForces(i)
+    write(*,'(A6,I4,A5,F9.6,A5,F9.6)') "ANGLE ", i, " E = ", AngleEnergies(i), " F = ", AngleForces(i)
   enddo
 
 END SUBROUTINE PrintEnergyAndForces

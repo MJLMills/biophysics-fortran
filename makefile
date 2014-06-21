@@ -13,6 +13,9 @@ TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFuncti
 Conformation.o: ChemicalSystem.o CoordinateFunctions.o ForceFieldFunctions.o
 
 CoordinateFunctions.o: VectorMath.o
+
+Dynamics.o: ChemicalSystem.o Conformation.o
+
 %: %.o
 	$(FC) $(FCFLAGS) -o $@ $^ $(LDFLAGS)
 
