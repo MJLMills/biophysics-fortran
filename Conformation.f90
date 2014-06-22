@@ -8,7 +8,7 @@ IMPLICIT NONE
 
   real(8), allocatable :: CartCoords(:,:)
   real(8), allocatable :: BondEnergies(:), AngleEnergies(:)
-  real(8), allocatable :: BondValues(:), AngleValues(:)
+  real(8), allocatable :: BondValues(:), AngleValues(:), TorsionValues(:)
   real(8), allocatable :: BondForces(:), AngleForces(:), AtomicForces(:,:), AtomicAccelerations(:,:)
   real(8)              :: TotalBondEnergy, TotalAngleEnergy
   logical :: MemoryAllocated = .FALSE.
@@ -18,14 +18,15 @@ CONTAINS
 SUBROUTINE CreateConformation
 IMPLICIT NONE
 
-    if (.NOT. allocated(CartCoords))    then; allocate(CartCoords(nAtoms,3))  ; CartCoords(:,:)   = 0.0d0; endif
-    if (.NOT. allocated(BondValues))    then; allocate(BondValues(nBonds))    ; BondValues(:)     = 0.0d0; endif
-    if (.NOT. allocated(AngleValues))   then; allocate(AngleValues(nAngles))  ; AngleValues(:)    = 0.0d0; endif
-    if (.NOT. allocated(BondEnergies))  then; allocate(BondEnergies(nBonds))  ; BondEnergies(:)   = 0.0d0; endif
-    if (.NOT. allocated(AngleEnergies)) then; allocate(AngleEnergies(nAngles)); AngleEnergies(:)  = 0.0d0; endif
-    if (.NOT. allocated(AtomicForces))  then; allocate(AtomicForces(nAtoms,3)); AtomicForces(:,:) = 0.0d0; endif
-    if (.NOT. allocated(BondForces))    then; allocate(BondForces(nBonds))    ; BondForces(:)     = 0.0d0; endif
-    if (.NOT. allocated(AngleForces))   then; allocate(AngleForces(nAngles))  ; AngleForces(:)    = 0.0d0; endif
+    if (.NOT. allocated(CartCoords))    then; allocate(CartCoords(nAtoms,3))    ; CartCoords(:,:)   = 0.0d0; endif
+    if (.NOT. allocated(BondValues))    then; allocate(BondValues(nBonds))      ; BondValues(:)     = 0.0d0; endif
+    if (.NOT. allocated(AngleValues))   then; allocate(AngleValues(nAngles))    ; AngleValues(:)    = 0.0d0; endif
+    if (.NOT. allocated(TorsionValues)) then; allocate(TorsionValues(nTorsions)); TorsionValues(:)  = 0.0d0; endif
+    if (.NOT. allocated(BondEnergies))  then; allocate(BondEnergies(nBonds))    ; BondEnergies(:)   = 0.0d0; endif
+    if (.NOT. allocated(AngleEnergies)) then; allocate(AngleEnergies(nAngles))  ; AngleEnergies(:)  = 0.0d0; endif
+    if (.NOT. allocated(AtomicForces))  then; allocate(AtomicForces(nAtoms,3))  ; AtomicForces(:,:) = 0.0d0; endif
+    if (.NOT. allocated(BondForces))    then; allocate(BondForces(nBonds))      ; BondForces(:)     = 0.0d0; endif
+    if (.NOT. allocated(AngleForces))   then; allocate(AngleForces(nAngles))    ; AngleForces(:)    = 0.0d0; endif
 
     MemoryAllocated = .TRUE.
 
@@ -37,6 +38,7 @@ IMPLICIT NONE
     if (allocated(CartCoords))    then; deallocate(CartCoords)   ; endif
     if (allocated(BondValues))    then; deallocate(BondValues)   ; endif
     if (allocated(AngleValues))   then; deallocate(AngleValues)  ; endif
+    if (allocated(TorsionValues)) then; deallocate(TorsionValues); endif
     if (allocated(BondEnergies))  then; deallocate(BondEnergies) ; endif
     if (allocated(AngleEnergies)) then; deallocate(AngleEnergies); endif
     if (allocated(AtomicForces))  then; deallocate(AtomicForces) ; endif
@@ -63,6 +65,10 @@ IMPLICIT NONE
     AngleValues(i) = Angle(CartCoords(AngleIDs(1,2),:),&
     &                      CartCoords(AngleIDs(1,1),:),&
     &                      CartCoords(AngleIDs(1,3),:))
+  enddo
+
+  do i = 1, nTorsions
+    
   enddo
 
 END SUBROUTINE CartesianToRedundantInternal
@@ -134,6 +140,7 @@ do atom = 1, nAtoms
   do cart = 1, 3
 
     Write(*,*) "FORCE ON ", atom, " ALONG ", cart, " = ", AtomicForces(atom,cart)
+    AtomicAccelerations(atom,cart) = -1.0D0 * AtomicForces(atom,cart) / AtomicMasses(atom)
 
   enddo
 
@@ -147,7 +154,7 @@ END SUBROUTINE CalculateAccelerations
 SUBROUTINE CalculateAngleEnergy
 IMPLICIT NONE
 
-  integer :: i
+  integer :: i, cart
 
   TotalAngleEnergy = 0.0d0
 

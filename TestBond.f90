@@ -8,6 +8,14 @@ IMPLICIT NONE
 call CreateChemicalSystem(3,2,1,0)
 
 !Fill the created arrays of ChemicalSystem with their values - replace with read
+Elements(1) = "H "
+Elements(2) = "O "
+Elements(3) = "H "
+
+AtomicMasses(1) = 1.00794d0
+AtomicMasses(2) = 15.9994d0
+AtomicMasses(3) = 1.00794d0
+
 BondIDS(1,1) = 1
 BondIDS(1,2) = 2
 BondIDs(2,1) = 2

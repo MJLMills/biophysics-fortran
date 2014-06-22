@@ -2,6 +2,7 @@ MODULE ChemicalSystem
 IMPLICIT NONE
 
 character(LEN=4), allocatable :: BondTypes(:), AngleTypes(:), TorsionTypes(:)
+character(LEN=2), allocatable :: Elements(:)
 integer                       :: nAtoms, nBonds, nAngles, nTorsions
 integer, allocatable          :: BondIDs(:,:), AngleIDs(:,:), TorsionIDs(:,:)
 real(8), allocatable          :: AtomicMasses(:)
@@ -17,7 +18,8 @@ SUBROUTINE CreateChemicalSystem(setAtoms,setBonds,setAngles,setTorsions)
     nAtoms = setAtoms; nBonds = setBonds; nAngles = setAngles; nTorsions = setTorsions
 
     !Allocate arrays with variable dimension nAtoms
-    if (.NOT. allocated(AtomicMasses)) then; allocate(AtomicMasses(nAtoms));    AtomicMasses(:) = 0.0d0; endif
+    if (.NOT. allocated(AtomicMasses)) then; allocate(AtomicMasses(nAtoms)); AtomicMasses(:) = 0.0d0; endif
+    if (.NOT. allocated(Elements))     then; allocate(Elements(nAtoms))    ; Elements(:)     = ""   ; endif
 
     !Allocate arrays with variable dimension nBonds
     if (.NOT. allocated(BondTypes))    then; allocate(BondTypes(nBonds));       BondTypes(:)    = ""; endif
