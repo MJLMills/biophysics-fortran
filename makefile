@@ -6,15 +6,15 @@ PROGRAMS = TestBond
 
 all: $(PROGRAMS)
 
-TestBond.o: ChemicalSystem.o Conformation.o
+TestBond.o: ChemicalSystem.o Conformation.o Dynamics.o
 
-TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o VectorMath.o
+TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o VectorMath.o Dynamics.o
 
 Conformation.o: ChemicalSystem.o CoordinateFunctions.o ForceFieldFunctions.o
 
 CoordinateFunctions.o: VectorMath.o
 
-Dynamics.o: ChemicalSystem.o Conformation.o
+Dynamics.o: Conformation.o
 
 %: %.o
 	$(FC) $(FCFLAGS) -o $@ $^ $(LDFLAGS)

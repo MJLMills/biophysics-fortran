@@ -1,41 +1,65 @@
 MODULE Dynamics
 
-  use ChemicalSystem
   use Conformation
 
 IMPLICIT NONE
 
+real(8), allocatable :: positions(:),     accelerations(:),     velocities(:)
+real(8), allocatable :: nextPositions(:), nextAccelerations(:), nextVelocities(:)
+
   CONTAINS
+
+SUBROUTINE AllocateArrays
+IMPLICIT NONE
+
+if (.NOT. allocated(positions))         then; allocate(positions(3*nAtoms))         ; positions(:)         = 0.0d0; endif
+if (.NOT. allocated(velocities))        then; allocate(velocities(3*nAtoms))        ; velocities(:)        = 0.0d0; endif
+if (.NOT. allocated(accelerations))     then; allocate(accelerations(3*nAtoms))     ; accelerations(:)     = 0.0d0; endif
+if (.NOT. allocated(nextAccelerations)) then; allocate(nextAccelerations(3*nAtoms)) ; nextAccelerations(:) = 0.0d0; endif
+if (.NOT. allocated(nextPositions))     then; allocate(nextPositions(3*nAtoms))     ; nextPositions(:)     = 0.0d0; endif
+if (.NOT. allocated(nextVelocities))    then; allocate(nextVelocities(3*nAtoms))    ; nextVelocities(:)    = 0.0d0; endif
+
+END SUBROUTINE AllocateArrays
+
+SUBROUTINE DeallocateArrays
+IMPLICIT NONE
+
+if (allocated(positions))         then; deallocate(positions)         ; endif
+if (allocated(velocities))        then; deallocate(velocities)        ; endif
+if (allocated(accelerations))     then; deallocate(accelerations)     ; endif
+if (allocated(nextAccelerations)) then; deallocate(nextAccelerations) ; endif
+if (allocated(nextPositions))     then; deallocate(nextPositions)     ; endif
+if (allocated(nextVelocities))    then; deallocate(nextVelocities)    ; endif
+
+END SUBROUTINE DeallocateArrays
 
 SUBROUTINE VelocityVerlet(timestep,maxsteps)
 IMPLICIT NONE
 
-integer, intent(in) :: tstep, maxSteps
-real(8), allocatable :: velocities(:), accelerations(:), nextPositions(:), nextAccelerations(:)
-real(8) :: timestep, half_sq_timestep, half_timestep
+integer, intent(in) :: maxSteps
+real(8), intent(in) :: timestep
+real(8) :: half_sq_timestep, half_timestep
+integer :: tstep
 
-timestep = 0.0001
 half_timestep = 0.5d0 * timestep
 half_sq_timestep = half_timestep * timestep
 
-if (.NOT. allocated(velocities))        then; allocate(velocities(3*nAtoms));        velocities(:)        = 0.0d0; endif
-if (.NOT. allocated(accelerations))     then; allocate(accelerations(3*nAtoms));     accelerations(:)     = 0.0d0; endif
-if (.NOT. allocated(nextAccelerations)) then; allocate(nextAccelerations(3*nAtoms)); nextAccelerations(:) = 0.0d0; endif
-if (.NOT. allocated(nextPositions))     then; allocate(nextPositions(3*nAtoms));     nextPositions(:)     = 0.0d0; endif
+  call AllocateArrays
 
-!  accelerations = CalculateAccelerations !IMPLEMENT
+  call VectoriseCartesians
+  call CalculateAccelerations; accelerations = AtomicAccelerations
+
 !  velocities = generateRandom !IMPLEMENT
-
-    write(*,*) "Timestep    Time"
 
   do tstep = 1, maxSteps
 
-    write(*,*) tstep, tstep*timestep
-    call WriteData
+    write(*,'(I4,F12.9)') tstep, tstep*timestep; write(*,*)
+!    call WriteData
 
-    nextPositions(:) = timestep*velocities(:) + half_sq_timestep * accelerations(:)
+    nextPositions(:) = positions(:) + timestep*velocities(:) + half_sq_timestep * accelerations(:)
+
     call UpdateCartesians
-!    nextAccelerations = CalculateAccelerations THIS ROUTINE TO BE ADDED TO CONFORMATION.F90
+    call CalculateAccelerations; accelerations(:) = AtomicAccelerations(:)
     nextVelocities(:) = velocities(:) + half_timestep * (accelerations(:) + nextAccelerations(:))
 
     positions(:)     = nextPositions(:)     ; nextPositions(:)     = 0.0d0
@@ -44,7 +68,26 @@ if (.NOT. allocated(nextPositions))     then; allocate(nextPositions(3*nAtoms));
 
   enddo
 
+  call DeallocateArrays
+
 END SUBROUTINE VelocityVerlet
+
+SUBROUTINE VectoriseCartesians
+IMPLICIT NONE
+
+integer :: atom, cart, j
+
+  j = 1
+  do atom = 1, nAtoms
+
+    do cart = 1, 3
+      positions(j) = CartCoords(atom,cart)
+      j=j+1
+    enddo
+
+  enddo
+
+END SUBROUTINE VectoriseCartesians
 
 SUBROUTINE UpdateCartesians
 IMPLICIT NONE
@@ -61,11 +104,31 @@ integer :: atom, cart, j
 
   enddo
 
+  call PrintCartesianCoordinates
+  call CartesianToRedundantInternal
+!  call PrintRedundantCoordinates
+
 END SUBROUTINE UpdateCartesians
 
+!*
+
 SUBROUTINE WriteData
+IMPLICIT NONE
+
+integer :: atom, cart, j
+
+j = 1
+write(*,*) "ATOM POSITION VELOCITY ACCELERATION"
+do atom = 1, nAtoms
+  do cart = 1, 3
+    write(*,'(I4,9F10.6)') atom, positions(j), velocities(j), accelerations(j)
+    j = j+1
+  enddo
+enddo
 
 END SUBROUTINE WriteData
+
+END MODULE Dynamics
 
 !Velocity Verlet (better than leapfrog (gives r(t), v(t), a(t)) and Verlet (includes v(t) and no differencing of big numbers)
 
@@ -78,13 +141,6 @@ END SUBROUTINE WriteData
 !3) calculate a(t+dt) from r(t+dt)
 !4) calculate v(t+dt) from v(t), a(t) and a(t+dt) using B
 !5) t+dt -> t, write properties at t, go to 1
-
-
-
-
-
-
-
 
 !Beeman's algorithm (more accurate velocities than velocity verlet, hence better energy conservation. Isn't as fast as vV)
 !Also note that calculating r(t+dt) requires a(t) and a(t-dt). This raises the question of where a(t-dt) comes from.

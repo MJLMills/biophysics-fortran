@@ -9,9 +9,10 @@ IMPLICIT NONE
   real(8), allocatable :: CartCoords(:,:)
   real(8), allocatable :: BondEnergies(:), AngleEnergies(:)
   real(8), allocatable :: BondValues(:), AngleValues(:), TorsionValues(:)
-  real(8), allocatable :: BondForces(:), AngleForces(:), AtomicForces(:,:), AtomicAccelerations(:,:)
+  real(8), allocatable :: AtomicAccelerations(:)
+  real(8), allocatable :: BondForces(:), AngleForces(:), AtomicForces(:,:)
   real(8)              :: TotalBondEnergy, TotalAngleEnergy
-  logical :: MemoryAllocated = .FALSE.
+  integer              :: CartTrajecUnit = 15
 
 CONTAINS
 
@@ -27,25 +28,23 @@ IMPLICIT NONE
     if (.NOT. allocated(AtomicForces))  then; allocate(AtomicForces(nAtoms,3))  ; AtomicForces(:,:) = 0.0d0; endif
     if (.NOT. allocated(BondForces))    then; allocate(BondForces(nBonds))      ; BondForces(:)     = 0.0d0; endif
     if (.NOT. allocated(AngleForces))   then; allocate(AngleForces(nAngles))    ; AngleForces(:)    = 0.0d0; endif
-
-    MemoryAllocated = .TRUE.
+    if (.NOT. allocated(AtomicAccelerations))  then; allocate(AtomicAccelerations(3*nAtoms))  ; AtomicAccelerations(:) = 0.0d0; endif
 
 END SUBROUTINE CreateConformation
 
 SUBROUTINE DestroyConformation
 IMPLICIT NONE
 
-    if (allocated(CartCoords))    then; deallocate(CartCoords)   ; endif
-    if (allocated(BondValues))    then; deallocate(BondValues)   ; endif
-    if (allocated(AngleValues))   then; deallocate(AngleValues)  ; endif
-    if (allocated(TorsionValues)) then; deallocate(TorsionValues); endif
-    if (allocated(BondEnergies))  then; deallocate(BondEnergies) ; endif
-    if (allocated(AngleEnergies)) then; deallocate(AngleEnergies); endif
-    if (allocated(AtomicForces))  then; deallocate(AtomicForces) ; endif
-    if (allocated(BondForces))    then; deallocate(BondForces)   ; endif
-    if (allocated(AngleForces))   then; deallocate(AngleForces)  ; endif
-
-    MemoryAllocated = .FALSE.
+    if (allocated(CartCoords))          then; deallocate(CartCoords)         ; endif
+    if (allocated(BondValues))          then; deallocate(BondValues)         ; endif
+    if (allocated(AngleValues))         then; deallocate(AngleValues)        ; endif
+    if (allocated(TorsionValues))       then; deallocate(TorsionValues)      ; endif
+    if (allocated(BondEnergies))        then; deallocate(BondEnergies)       ; endif
+    if (allocated(AngleEnergies))       then; deallocate(AngleEnergies)      ; endif
+    if (allocated(AtomicForces))        then; deallocate(AtomicForces)       ; endif
+    if (allocated(BondForces))          then; deallocate(BondForces)         ; endif
+    if (allocated(AngleForces))         then; deallocate(AngleForces)        ; endif
+    if (allocated(AtomicAccelerations)) then; deallocate(AtomicAccelerations); endif
 
 END SUBROUTINE DestroyConformation
 
@@ -78,16 +77,33 @@ SUBROUTINE PrintRedundantCoordinates
 
   integer :: i
 
+  write(*,*)
   do i = 1, nBonds
-    write(*,'(A6,I4,A3,F9.6)') "BOND  ", i, " = ", BondValues(i)
+    write(*,'(A8,I4,A3,F9.6)') "BOND    ", i, " = ", BondValues(i)
   enddo
 
   do i = 1, nAngles
-    write(*,'(A6,I4,A3,F9.6)') "ANGLE ", i, " = ", AngleValues(i)
+    write(*,'(A8,I4,A3,F9.6)') "ANGLE   ", i, " = ", AngleValues(i)
+  enddo
+
+  do i = 1, nTorsions
+    write(*,'(A8,I4,A3,F9.6)') "TORSION ", i, " = ", TorsionValues(i)
   enddo
 
 END SUBROUTINE PrintRedundantCoordinates
 !*
+
+SUBROUTINE PrintCartesianCoordinates
+
+integer :: atom
+
+  write(CartTrajecUnit,'(I1)') nAtoms; write(CartTrajecUnit,*)
+  do atom = 1, nAtoms
+    write(CartTrajecUnit,'(A2,I4,3F9.6)') Elements(atom), atom, CartCoords(atom,:)
+  enddo
+
+END SUBROUTINE PrintCartesianCoordinates
+
 SUBROUTINE CalculateBondEnergy
 
 integer :: i, j
@@ -125,25 +141,26 @@ END SUBROUTINE CalculateBondEnergy
 
 !*
 
-SUBROUTINE CalculateAccelerations
+SUBROUTINE CalculateAccelerations()
 IMPLICIT NONE
 
-integer :: atom, cart
+integer :: atom, cart, j
 
 !This has to fill the array AtomicAccelerations for the dynamics runner
 
 call CalculateBondEnergy !gets bond energies and internal forces
 call CalculateAngleEnergy ! gets angle energies and internal forces
 
+j = 1
 do atom = 1, nAtoms
 
   do cart = 1, 3
 
-    Write(*,*) "FORCE ON ", atom, " ALONG ", cart, " = ", AtomicForces(atom,cart)
-    AtomicAccelerations(atom,cart) = -1.0D0 * AtomicForces(atom,cart) / AtomicMasses(atom)
-
+!    print*, "FORCE ON ", atom, " ALONG ", cart, " = ", AtomicForces(atom,cart)
+    AtomicAccelerations(j) = -1.0D0 * AtomicForces(atom,cart) / AtomicMasses(atom)
+    j = j+1
   enddo
-
+print*, 
 enddo
 
 
