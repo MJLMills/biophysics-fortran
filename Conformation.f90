@@ -11,7 +11,7 @@ IMPLICIT NONE
   real(8), allocatable :: BondValues(:), AngleValues(:), TorsionValues(:)
   real(8), allocatable :: AtomicAccelerations(:)
   real(8), allocatable :: BondForces(:), AngleForces(:), AtomicForces(:,:)
-  real(8)              :: TotalBondEnergy, TotalAngleEnergy
+  real(8)              :: TotalBondEnergy, TotalAngleEnergy, TotalTorsionEnergy
   integer              :: CartTrajecUnit = 15
 
 CONTAINS
@@ -19,16 +19,16 @@ CONTAINS
 SUBROUTINE CreateConformation
 IMPLICIT NONE
 
-    if (.NOT. allocated(CartCoords))    then; allocate(CartCoords(nAtoms,3))    ; CartCoords(:,:)   = 0.0d0; endif
-    if (.NOT. allocated(BondValues))    then; allocate(BondValues(nBonds))      ; BondValues(:)     = 0.0d0; endif
-    if (.NOT. allocated(AngleValues))   then; allocate(AngleValues(nAngles))    ; AngleValues(:)    = 0.0d0; endif
-    if (.NOT. allocated(TorsionValues)) then; allocate(TorsionValues(nTorsions)); TorsionValues(:)  = 0.0d0; endif
-    if (.NOT. allocated(BondEnergies))  then; allocate(BondEnergies(nBonds))    ; BondEnergies(:)   = 0.0d0; endif
-    if (.NOT. allocated(AngleEnergies)) then; allocate(AngleEnergies(nAngles))  ; AngleEnergies(:)  = 0.0d0; endif
-    if (.NOT. allocated(AtomicForces))  then; allocate(AtomicForces(nAtoms,3))  ; AtomicForces(:,:) = 0.0d0; endif
-    if (.NOT. allocated(BondForces))    then; allocate(BondForces(nBonds))      ; BondForces(:)     = 0.0d0; endif
-    if (.NOT. allocated(AngleForces))   then; allocate(AngleForces(nAngles))    ; AngleForces(:)    = 0.0d0; endif
-    if (.NOT. allocated(AtomicAccelerations))  then; allocate(AtomicAccelerations(3*nAtoms))  ; AtomicAccelerations(:) = 0.0d0; endif
+    if (.NOT. allocated(CartCoords))           then; allocate(CartCoords(nAtoms,3))          ; CartCoords(:,:)        = 0.0d0; endif
+    if (.NOT. allocated(BondValues))           then; allocate(BondValues(nBonds))            ; BondValues(:)          = 0.0d0; endif
+    if (.NOT. allocated(AngleValues))          then; allocate(AngleValues(nAngles))          ; AngleValues(:)         = 0.0d0; endif
+    if (.NOT. allocated(TorsionValues))        then; allocate(TorsionValues(nTorsions))      ; TorsionValues(:)       = 0.0d0; endif
+    if (.NOT. allocated(BondEnergies))         then; allocate(BondEnergies(nBonds))          ; BondEnergies(:)        = 0.0d0; endif
+    if (.NOT. allocated(AngleEnergies))        then; allocate(AngleEnergies(nAngles))        ; AngleEnergies(:)       = 0.0d0; endif
+    if (.NOT. allocated(AtomicForces))         then; allocate(AtomicForces(nAtoms,3))        ; AtomicForces(:,:)      = 0.0d0; endif
+    if (.NOT. allocated(BondForces))           then; allocate(BondForces(nBonds))            ; BondForces(:)          = 0.0d0; endif
+    if (.NOT. allocated(AngleForces))          then; allocate(AngleForces(nAngles))          ; AngleForces(:)         = 0.0d0; endif
+    if (.NOT. allocated(AtomicAccelerations))  then; allocate(AtomicAccelerations(3*nAtoms)) ; AtomicAccelerations(:) = 0.0d0; endif
 
 END SUBROUTINE CreateConformation
 
@@ -56,18 +56,22 @@ IMPLICIT NONE
   integer :: i
 
   do i = 1, nBonds
-    BondValues(i) = EuclideanDistance(CartCoords(BondIDs(i,1),:),&
-    &                                 CartCoords(BondIDs(i,2),:),3)
+    BondValues(i) = EuclideanDistance(CartCoords(BondIDs(i,1),:), &
+    &                                 CartCoords(BondIDs(i,2),:), &
+    &                                 3                           )
   enddo
 
   do i = 1, nAngles
-    AngleValues(i) = Angle(CartCoords(AngleIDs(1,2),:),&
-    &                      CartCoords(AngleIDs(1,1),:),&
-    &                      CartCoords(AngleIDs(1,3),:))
+    AngleValues(i) = Angle(CartCoords(AngleIDs(i,2),:), &
+    &                      CartCoords(AngleIDs(i,1),:), &
+    &                      CartCoords(AngleIDs(i,3),:)  )
   enddo
 
   do i = 1, nTorsions
-    
+    TorsionValues(i) = TorsionAngle(CartCoords(TorsionIDs(i,1), &
+    &                               CartCoords(TorsionIDs(i,2), &
+    &                               CartCoords(TorsionIDs(i,3), &
+    &                               CartCoords(TorsionIDs(i,4)  )
   enddo
 
 END SUBROUTINE CartesianToRedundantInternal
@@ -116,9 +120,13 @@ do i = 1, nBonds
 
     case ("HARM")
 
-      bondEnergies(i) = HarmonicEnergy(bondForceConstants(i),bondReferences(i),BondValues(i))
-      BondForces(i) =  HarmonicFirstDerivative_dr(bondForceConstants(i),&
-      &                                           bondReferences(i),BondValues(i))
+      bondEnergies(i) = HarmonicEnergy(bondForceConstants(i), &
+      &                                bondReferences(i),     &
+      &                                BondValues(i)          )
+
+      BondForces(i) =  HarmonicFirstDerivative_dr(bondForceConstants(i), &
+      &                                           bondReferences(i),     &
+      &                                           BondValues(i)          )
 
     case default
 
@@ -127,10 +135,19 @@ do i = 1, nBonds
   end select
 
   do j = 1, 3
-    AtomicForces(BondIDs(i,1),j) = AtomicForces(BondIDs(i,1),j) + &
-&                                  BondEnergies(i) * EuclideanDistanceDerivative(CartCoords(BondIDs(i,1),:),CartCoords(BondIDs(i,2),:),3,j)
-    AtomicForces(BondIDs(i,2),j) = AtomicForces(BondIDs(i,1),j) + &
-&                                  BondEnergies(i) * EuclideanDistanceDerivative(CartCoords(BondIDs(i,2),:),CartCoords(BondIDs(i,1),:),3,j)
+
+    AtomicForces(BondIDs(i,1),j) = AtomicForces(BondIDs(i,1),j) +                                            &
+    &                              BondEnergies(i) * EuclideanDistanceDerivative(CartCoords(BondIDs(i,1),:), &
+    &                              CartCoords(BondIDs(i,2),:),                                               &
+    &                              3,                                                                        &
+    &                              j                                                                         )
+
+    AtomicForces(BondIDs(i,2),j) = AtomicForces(BondIDs(i,1),j) +                                            &
+    &                              BondEnergies(i) * EuclideanDistanceDerivative(CartCoords(BondIDs(i,2),:), &
+    &                              CartCoords(BondIDs(i,1),:),                                               &
+    &                              3,                                                                        &
+    &                              j                                                                         )
+
   enddo
   
   TotalBondEnergy = TotalBondEnergy + bondEnergies(i)
@@ -141,26 +158,28 @@ END SUBROUTINE CalculateBondEnergy
 
 !*
 
-SUBROUTINE CalculateAccelerations()
+SUBROUTINE CalculateAccelerations
 IMPLICIT NONE
 
 integer :: atom, cart, j
 
 !This has to fill the array AtomicAccelerations for the dynamics runner
 
-call CalculateBondEnergy !gets bond energies and internal forces
+call CalculateBondEnergy  ! gets bond energies and internal forces
 call CalculateAngleEnergy ! gets angle energies and internal forces
 
 j = 1
+
 do atom = 1, nAtoms
 
   do cart = 1, 3
 
-!    print*, "FORCE ON ", atom, " ALONG ", cart, " = ", AtomicForces(atom,cart)
     AtomicAccelerations(j) = -1.0D0 * AtomicForces(atom,cart) / AtomicMasses(atom)
     j = j+1
+
   enddo
-print*, 
+  print*, 
+
 enddo
 
 
@@ -181,9 +200,13 @@ IMPLICIT NONE
 
       case ("HARM")
 
-        AngleEnergies(i) = HarmonicEnergy(AngleForceConstants(i),AngleReferences(i),AngleValues(i))
-        AngleForces(i)   = HarmonicFirstDerivative_dr(AngleForceConstants(i),&
-        &                                           AngleReferences(i),AngleValues(i))
+        AngleEnergies(i) = HarmonicEnergy(AngleForceConstants(i), &
+        &                                 AngleReferences(i),     &
+        &                                 AngleValues(i)          )
+
+        AngleForces(i)   = HarmonicFirstDerivative_dr(AngleForceConstants(i), &
+        &                                             AngleReferences(i),     &
+        &                                             AngleValues(i)          )
 
       case default
 

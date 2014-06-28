@@ -46,7 +46,7 @@ SUBROUTINE DestroyChemicalSystem
     if (allocated(AngleTypes))   then; deallocate(AngleTypes)   ; endif
     if (allocated(AngleIDs))     then; deallocate(AngleIDs)     ; endif
     if (allocated(TorsionTypes)) then; deallocate(TorsionTypes) ; endif
-    if (allocated(TorsionTypes)) then; deallocate(TorsionTypes) ; endif
+    if (allocated(TorsionIDs))   then; deallocate(TorsionIDs)   ; endif
 
     if (allocated(BondForceConstants))  then; deallocate(BondForceConstants) ; endif
     if (allocated(BondReferences))      then; deallocate(BondReferences)     ; endif
