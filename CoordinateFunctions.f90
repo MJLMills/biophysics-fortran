@@ -13,7 +13,7 @@ IMPLICIT NONE
   integer, intent(in) :: n
   real(8), intent(in) :: origin(n), coords(n)
 
-    r = 0.0d0; r = dsqrt(DotProduct(coords(:) - origin(:),coords(:) - origin(:),n))
+      r = dsqrt(DotProduct(coords(:) - origin(:),coords(:) - origin(:),n))
   
   END FUNCTION EuclideanDistance
 
@@ -74,6 +74,10 @@ IMPLICIT NONE
   END FUNCTION EuclideanDistanceDerivative
 
 !*
+
+  PURE REAL(8) FUNCTION AngleDerivative result(der); IMPLICIT NONE
+
+  END FUNCTION AngleDerivative
   
 END MODULE CoordinateFunctions
 
