@@ -68,10 +68,10 @@ IMPLICIT NONE
   enddo
 
   do i = 1, nTorsions
-    TorsionValues(i) = TorsionAngle(CartCoords(TorsionIDs(i,1), &
-    &                               CartCoords(TorsionIDs(i,2), &
-    &                               CartCoords(TorsionIDs(i,3), &
-    &                               CartCoords(TorsionIDs(i,4)  )
+    TorsionValues(i) = TorsionAngle(CartCoords(TorsionIDs(i,1),:), &
+    &                               CartCoords(TorsionIDs(i,2),:), &
+    &                               CartCoords(TorsionIDs(i,3),:), &
+    &                               CartCoords(TorsionIDs(i,4),:)  )
   enddo
 
 END SUBROUTINE CartesianToRedundantInternal

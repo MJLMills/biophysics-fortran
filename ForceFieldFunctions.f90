@@ -166,4 +166,8 @@ CONTAINS
   
   END FUNCTION ElectrostaticEnergy
 
+!  PURE REAL(8) FUNCTION MorseDerivative() result(d); IMPLICIT NONE
+
+!  END FUNCTION MorseDerivative
+
 END MODULE ForceFieldFunctions

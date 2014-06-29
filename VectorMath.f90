@@ -43,7 +43,7 @@ CONTAINS
   integer, intent(in) :: n
   real(8), intent(in) :: vector(n)
 
-    r = 0.0d0; r = dsqrt(DotProduct(vector,vector,n))
+   r = dsqrt(DotProduct(vector,vector,n))
 
   END FUNCTION EuclideanNorm
 
@@ -55,7 +55,7 @@ CONTAINS
   real(8), intent(in) :: p(n)
   real(8) :: NormaliseVector(n)
 
-    NormaliseVector = p / EuclideanNorm(p,n)
+    NormaliseVector = p(:) / EuclideanNorm(p,n)
 
   END FUNCTION NormaliseVector
 

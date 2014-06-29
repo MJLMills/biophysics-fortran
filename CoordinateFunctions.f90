@@ -75,9 +75,13 @@ IMPLICIT NONE
 
 !*
 
-  PURE REAL(8) FUNCTION AngleDerivative result(der); IMPLICIT NONE
+!  PURE REAL(8) FUNCTION AngleDerivative result(der); IMPLICIT NONE
 
-  END FUNCTION AngleDerivative
+!  END FUNCTION AngleDerivative
+
+!  PURE REAL(8) FUNCTION TorsionDerivative result(der); IMPLICIT NONE
+
+!  END FUNCTION TorsionDerivative
   
 END MODULE CoordinateFunctions
 
