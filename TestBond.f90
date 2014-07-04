@@ -3,8 +3,11 @@ PROGRAM TestBond
   use ChemicalSystem
   use Conformation
   use Dynamics
+  use OMPTools
 
 IMPLICIT NONE
+
+call StartUpChecks
 
 call CreateChemicalSystem(3,2,1,0)
 
@@ -41,7 +44,7 @@ CartCoords(3,1) = 1.18786100427d0; CartCoords(3,2) = 0.91974025825d0; CartCoords
 !call CartesianToRedundantInternal
 !call PrintRedundantCoordinates
 
-call VelocityVerlet(0.001d-1,100)
+call VelocityVerlet(0.001d-1,2)
 
 call DestroyConformation
 call DestroyChemicalSystem

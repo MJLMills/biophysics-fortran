@@ -55,24 +55,30 @@ IMPLICIT NONE
 
   integer :: i
 
+  !$OMP PARALLEL DO
   do i = 1, nBonds
     BondValues(i) = EuclideanDistance(CartCoords(BondIDs(i,1),:), &
     &                                 CartCoords(BondIDs(i,2),:), &
     &                                 3                           )
   enddo
+  !$OMP END PARALLEL DO
 
+  !$OMP PARALLEL DO
   do i = 1, nAngles
     AngleValues(i) = Angle(CartCoords(AngleIDs(i,2),:), &
     &                      CartCoords(AngleIDs(i,1),:), &
     &                      CartCoords(AngleIDs(i,3),:)  )
   enddo
+  !$OMP END PARALLEL DO
 
+  !$OMP PARALLEL DO
   do i = 1, nTorsions
     TorsionValues(i) = TorsionAngle(CartCoords(TorsionIDs(i,1),:), &
     &                               CartCoords(TorsionIDs(i,2),:), &
     &                               CartCoords(TorsionIDs(i,3),:), &
     &                               CartCoords(TorsionIDs(i,4),:)  )
   enddo
+  !$OMP END PARALLEL DO
 
 END SUBROUTINE CartesianToRedundantInternal
 
@@ -178,7 +184,6 @@ do atom = 1, nAtoms
     j = j+1
 
   enddo
-  print*, 
 
 enddo
 

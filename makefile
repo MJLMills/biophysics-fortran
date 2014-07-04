@@ -1,14 +1,14 @@
 FC = gfortran
-FCFLAGS = -ffree-line-length-none -fmax-errors=0 -std=f95 -Wall
+FCFLAGS = -ffree-line-length-none -fmax-errors=0 -fopenmp -std=f95 -Wall
 #LDFLAGS -iexamplelib
 
 PROGRAMS = TestBond
 
 all: $(PROGRAMS)
 
-TestBond.o: ChemicalSystem.o Conformation.o Dynamics.o
+TestBond.o: ChemicalSystem.o Conformation.o Dynamics.o OMPTools.o
 
-TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o VectorMath.o Dynamics.o
+TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o VectorMath.o Dynamics.o OMPTools.o
 
 Conformation.o: ChemicalSystem.o CoordinateFunctions.o ForceFieldFunctions.o
 
