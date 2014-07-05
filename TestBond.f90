@@ -7,7 +7,7 @@ PROGRAM TestBond
 
 IMPLICIT NONE
 
-call StartUpChecks
+call OMP_setup
 
 call CreateChemicalSystem(3,2,1,0)
 
@@ -48,5 +48,6 @@ call VelocityVerlet(0.001d-1,2)
 
 call DestroyConformation
 call DestroyChemicalSystem
+call OMP_teardown
 
 END PROGRAM TestBond

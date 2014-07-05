@@ -22,22 +22,6 @@ CONTAINS
 
 !*
 
-  PURE REAL(8) FUNCTION CleanTrigArgument(x) result(x_clean); IMPLICIT NONE
-
-  real(8), intent(in) :: x
-
-    if (abs(x - 1.0D0) < 1.0D-7) then
-      x_clean = 1.0D0
-    else if (abs(x+1.0D0) < 1.0D-7) then
-      x_clean = -1.0D0
-    else
-      x_clean = x
-    endif
-
-  END FUNCTION CleanTrigArgument
-
-!*
-
   PURE REAL(8) FUNCTION EuclideanNorm(vector,n) result(r); IMPLICIT NONE
 
   integer, intent(in) :: n

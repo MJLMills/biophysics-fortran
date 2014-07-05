@@ -1,42 +1,50 @@
 MODULE OMPTools
 
-use omp_lib
+  use omp_lib
+  use Toolbox
 
 IMPLICIT NONE
 
-CONTAINS
+  INTEGER, PARAMETER :: out = 10
+  INTEGER            :: ios
 
-SUBROUTINE StartUpChecks
+  CONTAINS
+
+SUBROUTINE OMP_setup
 IMPLICIT NONE
 
 LOGICAL :: isDynamic, isNested
+CHARACTER(15), PARAMETER :: fileName = "OpenMP-Data.txt"
 10 FORMAT (A32)
 20 FORMAT (A32,I4)
 
-WRITE(*,10) "****** OpenMP INFORMATION ******"
-WRITE(*,*)
+OPEN(UNIT=out,FILE=fileName,IOSTAT=ios,STATUS="REPLACE",ACCESS="SEQUENTIAL",FORM="FORMATTED",ACTION="WRITE")
+if (ios /= 0) call CheckFileOpen(ios,fileName,out)
 
-WRITE(*,20) "NUMBER OF PROCESSORS AVAILABLE: ", OMP_get_num_procs()
-WRITE(*,20) "MAXIMUM THREADS CURRENTLY SET : ", OMP_get_max_threads()
+WRITE(out,10) "****** OpenMP INFORMATION ******"
+WRITE(out,*)
+
+WRITE(out,20) "NUMBER OF PROCESSORS AVAILABLE: ", OMP_get_num_procs()
+WRITE(out,20) "MAXIMUM THREADS CURRENTLY SET : ", OMP_get_max_threads()
 
 isDynamic = OMP_get_dynamic()
 if (isDynamic .EQV. .TRUE.) then
-  WRITE(*,10) "DYNAMIC ADJUSTMENT IS ENABLED   "
+  WRITE(out,10) "DYNAMIC ADJUSTMENT IS ENABLED   "
 else
-  WRITE(*,10) "DYNAMIC ADJUSTMENT IS DISABLED  "
+  WRITE(out,10) "DYNAMIC ADJUSTMENT IS DISABLED  "
 endif
 
 isNested = OMP_get_nested() 
 if (isNested .EQV. .TRUE.) then  
-  WRITE(*,10) "NESTED PARALLELISM IS ENABLED   "
+  WRITE(out,10) "NESTED PARALLELISM IS ENABLED   "
 else
-  WRITE(*,10) "NESTED PARALLELISM IS DISABLED  "
+  WRITE(out,10) "NESTED PARALLELISM IS DISABLED  "
 endif
 
-WRITE(*,*)
-WRITE(*,10) "********************************"
+WRITE(out,*)
+WRITE(out,10) "********************************"
 
-END SUBROUTINE StartUpchecks
+END SUBROUTINE OMP_setup
 
 SUBROUTINE GetParallelInformation
 IMPLICIT NONE
@@ -48,12 +56,19 @@ LOGICAL :: isParallel
 isParallel = OMP_in_parallel()
 
 if (isParallel .EQV. .TRUE.) then
-  WRITE(*,10) "REGION IS PARALLEL"
-  WRITE(*,20) "NUMBER OF ACTIVE THREADS:       ", OMP_get_num_threads()
+  WRITE(out,10) "REGION IS PARALLEL"
+  WRITE(out,20) "NUMBER OF ACTIVE THREADS:       ", OMP_get_num_threads()
 else
-  WRITE(*,*) "REGION IS NOT PARALLEL"
+  WRITE(out,*) "REGION IS NOT PARALLEL"
 endif
 
 END SUBROUTINE GetParallelInformation
+
+SUBROUTINE OMP_teardown
+IMPLICIT NONE
+
+CLOSE(out,IOSTAT=ios)
+
+END SUBROUTINE OMP_teardown
 
 END MODULE OMPTools
