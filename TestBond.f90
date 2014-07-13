@@ -15,9 +15,8 @@ CALL PrintTimeAndDate
 call OMP_setup(noError)
 if (noError .EQV. .FALSE.) STOP "DIED: CANNOT SET UP OMP"
 
-CALL WallClockProperties()
+CALL InitialiseWallClock()
 CALL StartWallClock()
-CALL StartCPUClock()
 
 call CreateChemicalSystem(3,2,1,0)
 
@@ -54,15 +53,13 @@ CartCoords(3,1) = 1.18786100427d0; CartCoords(3,2) = 0.91974025825d0; CartCoords
 !call CartesianToRedundantInternal
 !call PrintRedundantCoordinates
 
-call MeasureWallClock(.TRUE.)
 call VelocityVerlet(0.001d-1,500)
-call MeasureWallClock(.TRUE.)
 
 call DestroyConformation
 call DestroyChemicalSystem
 call OMP_teardown
 
-CALL MeasureWallClock(.FALSE.); CALL MeasureCPUClock(.FALSE.)
-CALL PrintWallTime(); CALL PrintCPUTime()
+CALL MeasureWallClock(.FALSE.);
+CALL PrintWallTime();
 
 END PROGRAM TestBond

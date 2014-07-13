@@ -2,13 +2,13 @@ MODULE TimeTools
 
   IMPLICIT NONE
 
-  INTEGER(8) :: WallCountMax, WallCountRate, wallStart, wallEnd
-  REAL(8)    :: wcMax, wcRate
-  REAL(4)    :: cpuStart, cpuEnd
+  INTEGER(8), PRIVATE :: WallCountMax, WallCountRate, wallStart, wallEnd, wallPrev=0
+  REAL(8),    PRIVATE :: wcMax=0.0d0, wcRate=0.0d0, wcPrev=0.0d0
+  REAL(4),    PRIVATE :: cpuStart=0.0d0, cpuEnd=0.0d0, cpuPrev=0.0d0
 
-  CONTAINS
+CONTAINS
 
-  SUBROUTINE WallClockProperties
+  SUBROUTINE InitialiseWallClock
     
     IMPLICIT NONE
 
@@ -26,7 +26,7 @@ MODULE TimeTools
     WRITE(*,'(A3)') "***" 
     WRITE(*,*)
 
-  END SUBROUTINE WallClockProperties
+  END SUBROUTINE InitialiseWallClock
 
 !*
 
@@ -35,6 +35,7 @@ SUBROUTINE StartCPUClock
   IMPLICIT NONE
 
   CALL CPU_TIME(cpuStart)
+  cpuPrev = cpuStart
 
 END SUBROUTINE StartCPUClock
 
@@ -45,6 +46,7 @@ SUBROUTINE MeasureCPUClock(printTime)
   IMPLICIT NONE
   LOGICAL, INTENT(IN) :: printTime
 
+  cpuPrev = cpuEnd
   CALL CPU_TIME(cpuEnd)
   IF (printTime .EQV. .TRUE.) call PrintCPUTime()
 
@@ -56,7 +58,8 @@ END SUBROUTINE MeasureCPUClock
 
     IMPLICIT NONE
 
-    WRITE(*,*) "CPU TIME =  ", cpuStart - cpuEnd
+    WRITE(*,*) "CPU TIME SINCE PREVIOUS CALL  = ", cpuEnd - cpuPrev
+    WRITE(*,*) "CPU TIME SINCE START CALL     = ", cpuEnd - cpuStart
 
   END SUBROUTINE PrintCPUTime
 
@@ -66,7 +69,8 @@ END SUBROUTINE MeasureCPUClock
   
     IMPLICIT NONE
 
-    CALL system_clock(wallStart)    
+    CALL system_clock(wallStart)
+    wallPrev = wallStart
 
   END SUBROUTINE StartWallClock
 
@@ -76,7 +80,8 @@ END SUBROUTINE MeasureCPUClock
 
     IMPLICIT NONE
     LOGICAL, INTENT(IN) :: printTime
-
+    
+    wcPrev = wallEnd
     CALL system_clock(wallEnd)
     IF (printTime .EQV. .TRUE.) CALL PrintWallTime()
 
@@ -88,7 +93,8 @@ END SUBROUTINE MeasureCPUClock
 
     IMPLICIT NONE
 
-    WRITE(*,*) "WALL TIME = ", DBLE(wallEnd - wallStart) / wcRate
+    WRITE(*,'(A30,F12.5,A2)') "WALL TIME SINCE PREVIOUS CALL = ", DBLE(wallEnd - wallPrev)  / wcRate, " s"
+    WRITE(*,'(A30,F12.5,A2)') "WALL TIME SINCE START CALL    = ", DBLE(wallEnd - wallStart) / wcRate, " s"
 
   END SUBROUTINE PrintWallTime
 
