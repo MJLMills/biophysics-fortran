@@ -53,7 +53,7 @@ half_sq_timestep = half_timestep * timestep
 
   do tstep = 1, maxSteps
 
-    write(*,'(I4,F12.9)') tstep, tstep*timestep; write(*,*)
+!    write(*,'(I4,F12.9)') tstep, tstep*timestep; write(*,*)
 !    call WriteData
 
     nextPositions(:) = positions(:) + timestep*velocities(:) + half_sq_timestep * accelerations(:)

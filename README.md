@@ -63,3 +63,13 @@ labelled with the message passed to the routine.
 This subroutine prints general information about the OMP environment that is
 available to the program via the OMP API. The output is labelled with the 
 message passed to the routine.
+
+        Timing
+
+Three intrinsic routines are used to time the execution. CPU_TIME gives the CPU
+time, SYSTEM_CLOCK gives the wall time and DATE_AND_TIME gives the date and time.
+These are wrapped in a module named TimeTools.f90, which allows the starting and
+measurement of the two clocks, and the printing of the differences in time. A logical
+flag tells the measurement routines whether to print or not. In comparing CPU and wall
+times, it is recommended that you measure the two times first, then print them to avoid
+delay.

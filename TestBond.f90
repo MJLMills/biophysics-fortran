@@ -4,13 +4,20 @@ PROGRAM TestBond
   use Conformation
   use Dynamics
   use OMPTools
+  use TimeTools
 
 IMPLICIT NONE
 
 LOGICAL :: noError = .FALSE.
 
+CALL PrintTimeAndDate
+
 call OMP_setup(noError)
 if (noError .EQV. .FALSE.) STOP "DIED: CANNOT SET UP OMP"
+
+CALL WallClockProperties()
+CALL StartWallClock()
+CALL StartCPUClock()
 
 call CreateChemicalSystem(3,2,1,0)
 
@@ -47,10 +54,15 @@ CartCoords(3,1) = 1.18786100427d0; CartCoords(3,2) = 0.91974025825d0; CartCoords
 !call CartesianToRedundantInternal
 !call PrintRedundantCoordinates
 
-call VelocityVerlet(0.001d-1,2)
+call MeasureWallClock(.TRUE.)
+call VelocityVerlet(0.001d-1,500)
+call MeasureWallClock(.TRUE.)
 
 call DestroyConformation
 call DestroyChemicalSystem
 call OMP_teardown
+
+CALL MeasureWallClock(.FALSE.); CALL MeasureCPUClock(.FALSE.)
+CALL PrintWallTime(); CALL PrintCPUTime()
 
 END PROGRAM TestBond

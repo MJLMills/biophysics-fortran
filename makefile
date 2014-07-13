@@ -6,9 +6,9 @@ PROGRAMS = TestBond
 
 all: $(PROGRAMS)
 
-TestBond.o: ChemicalSystem.o Conformation.o Dynamics.o OMPTools.o
+TestBond.o: ChemicalSystem.o Conformation.o Dynamics.o OMPTools.o TimeTools.o
 
-TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o VectorMath.o Dynamics.o OMPTools.o Toolbox.o
+TestBond: ChemicalSystem.o Conformation.o CoordinateFunctions.o ForceFieldFunctions.o VectorMath.o Dynamics.o OMPTools.o Toolbox.o TimeTools.o
 
 Conformation.o: ChemicalSystem.o CoordinateFunctions.o ForceFieldFunctions.o
 
