@@ -7,8 +7,23 @@ PROGRAM TestBond
 
 IMPLICIT NONE
 
+  NAMELIST /OMP/ numThreads, dynamicAllocation, nestedParallelism
+  INTEGER :: numThreads
+  LOGICAL :: dynamicAllocation, nestedParallelism
+
+OPEN(20,FILE='OMP.nml',IOSTAT=ios)
+if (ios /= 0) CALL CheckFileOpen(ios,fileName,20)
+
+READ(20,nml=OMP)
+
+CLOSE(20,IOSTAT=ios)
+if (ios /= 0) Call CheckFileClose(ios,fileName,out)
+
+PRINT*, "N THREAD = ", numThreads
+PRINT*, "DYNAMIC  = ", dynamicAllocation
+PRINT*, "NESTED   = ", nestedParallelism
+
 call OMP_setup
-call OMP_set_num_threads(2)
 call OMP_get_general_info("INITIAL SETUP")
 
 call CreateChemicalSystem(3,2,1,0)

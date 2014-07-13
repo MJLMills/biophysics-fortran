@@ -1,0 +1,5 @@
+&OMP 
+numThreads        = 2
+dynamicAllocation = .TRUE.
+nestedParallelism = .FALSE.
+/
