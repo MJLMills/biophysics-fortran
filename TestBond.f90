@@ -7,24 +7,10 @@ PROGRAM TestBond
 
 IMPLICIT NONE
 
-  NAMELIST /OMP/ numThreads, dynamicAllocation, nestedParallelism
-  INTEGER :: numThreads
-  LOGICAL :: dynamicAllocation, nestedParallelism
+LOGICAL :: noError = .FALSE.
 
-OPEN(20,FILE='OMP.nml',IOSTAT=ios)
-if (ios /= 0) CALL CheckFileOpen(ios,fileName,20)
-
-READ(20,nml=OMP)
-
-CLOSE(20,IOSTAT=ios)
-if (ios /= 0) Call CheckFileClose(ios,fileName,out)
-
-PRINT*, "N THREAD = ", numThreads
-PRINT*, "DYNAMIC  = ", dynamicAllocation
-PRINT*, "NESTED   = ", nestedParallelism
-
-call OMP_setup
-call OMP_get_general_info("INITIAL SETUP")
+call OMP_setup(noError)
+if (noError .EQV. .FALSE.) STOP "DIED: CANNOT SET UP OMP"
 
 call CreateChemicalSystem(3,2,1,0)
 
