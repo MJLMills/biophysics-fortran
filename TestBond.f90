@@ -8,6 +8,8 @@ PROGRAM TestBond
 IMPLICIT NONE
 
 call OMP_setup
+call OMP_set_num_threads(2)
+call OMP_get_general_info("INITIAL SETUP")
 
 call CreateChemicalSystem(3,2,1,0)
 

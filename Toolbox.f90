@@ -18,6 +18,21 @@ endif
 
 END SUBROUTINE CheckFileOpen
 
+SUBROUTINE CheckFileClose(ios,fileName,unit)
+IMPLICIT NONE
+
+INTEGER, INTENT(IN) :: ios, unit
+CHARACTER(*), INTENT(IN) :: fileName
+
+if (ios < 0) then
+  WRITE(*,*) "END-OF-FILE OR END-OF-RECORD OCCURED CLOSING", trim(adjustl(fileName)), "ON UNIT", unit
+else if (ios > 0) then
+  WRITE(*,*) "ERROR CONDITION OCCURED CLOSING", trim(adjustl(fileName)) ,"ON UNIT", unit
+endif
+
+ENDSUBROUTINE CheckFileClose
+
+
   PURE REAL(8) FUNCTION CleanTrigArgument(x) result(x_clean); IMPLICIT NONE
 
   real(8), intent(in) :: x
