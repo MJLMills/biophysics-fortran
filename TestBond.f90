@@ -18,7 +18,7 @@ if (noError .EQV. .FALSE.) STOP "DIED: CANNOT SET UP OMP"
 CALL InitialiseWallClock()
 CALL StartWallClock()
 
-call CreateChemicalSystem(3,2,1,0)
+CALL CreateChemicalSystem(3,2,1,0)
 
 !Fill the created arrays of ChemicalSystem with their values - replace with read
 Elements(1) = "H "
@@ -53,13 +53,17 @@ CartCoords(3,1) = 1.18786100427d0; CartCoords(3,2) = 0.91974025825d0; CartCoords
 !call CartesianToRedundantInternal
 !call PrintRedundantCoordinates
 
+call MeasureWallClock("START OF DYNAMICS")
 call VelocityVerlet(0.001d-1,500)
+call MeasureWallClock("END OF DYNAMICS")
+call PrintWallTime(.FALSE.)
 
 call DestroyConformation
 call DestroyChemicalSystem
 call OMP_teardown
 
-CALL MeasureWallClock(.FALSE.);
-CALL PrintWallTime();
+CALL MeasureWallClock("END OF PROGRAM");
+CALL PrintWallTime(.TRUE.);
+CALL PrintTimeAndDate()
 
 END PROGRAM TestBond

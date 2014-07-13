@@ -2,9 +2,10 @@ MODULE TimeTools
 
   IMPLICIT NONE
 
-  INTEGER(8), PRIVATE :: WallCountMax, WallCountRate, wallStart, wallEnd, wallPrev=0
-  REAL(8),    PRIVATE :: wcMax=0.0d0, wcRate=0.0d0, wcPrev=0.0d0
-  REAL(4),    PRIVATE :: cpuStart=0.0d0, cpuEnd=0.0d0, cpuPrev=0.0d0
+  INTEGER(8),     PRIVATE :: WallCountMax, WallCountRate, wallStart, wallEnd, wallPrev=0
+  REAL(8),        PRIVATE :: wcMax, wcRate
+  REAL(4),        PRIVATE :: cpuStart=0.0d0, cpuEnd=0.0d0, cpuPrev=0.0d0
+  CHARACTER(100), PRIVATE :: wallTag, prevWallTag
 
 CONTAINS
 
@@ -30,71 +31,40 @@ CONTAINS
 
 !*
 
-SUBROUTINE StartCPUClock
-
-  IMPLICIT NONE
-
-  CALL CPU_TIME(cpuStart)
-  cpuPrev = cpuStart
-
-END SUBROUTINE StartCPUClock
-
-!*
-
-SUBROUTINE MeasureCPUClock(printTime)
-
-  IMPLICIT NONE
-  LOGICAL, INTENT(IN) :: printTime
-
-  cpuPrev = cpuEnd
-  CALL CPU_TIME(cpuEnd)
-  IF (printTime .EQV. .TRUE.) call PrintCPUTime()
-
-END SUBROUTINE MeasureCPUClock
-
-!*
-
-  SUBROUTINE PrintCPUTime()
-
-    IMPLICIT NONE
-
-    WRITE(*,*) "CPU TIME SINCE PREVIOUS CALL  = ", cpuEnd - cpuPrev
-    WRITE(*,*) "CPU TIME SINCE START CALL     = ", cpuEnd - cpuStart
-
-  END SUBROUTINE PrintCPUTime
-
-!*
-
   SUBROUTINE StartWallClock
   
     IMPLICIT NONE
 
     CALL system_clock(wallStart)
     wallPrev = wallStart
+    wallTag = "CLOCK STARTED"
 
   END SUBROUTINE StartWallClock
 
 !*
 
-  SUBROUTINE MeasureWallClock(printTime)
+  SUBROUTINE MeasureWallClock(tag)
 
     IMPLICIT NONE
-    LOGICAL, INTENT(IN) :: printTime
-    
-    wcPrev = wallEnd
+    CHARACTER(*) :: tag
+
+    wallPrev = wallEnd
+    prevWallTag = wallTag
+    wallTag = tag
     CALL system_clock(wallEnd)
-    IF (printTime .EQV. .TRUE.) CALL PrintWallTime()
 
   END SUBROUTINE MeasureWallClock
 
 !*
 
-  SUBROUTINE PrintWallTime
+  SUBROUTINE PrintWallTime(measureFromStart)
 
     IMPLICIT NONE
+    LOGICAL, INTENT(IN) :: measureFromStart
 
-    WRITE(*,'(A30,F12.5,A2)') "WALL TIME SINCE PREVIOUS CALL = ", DBLE(wallEnd - wallPrev)  / wcRate, " s"
-    WRITE(*,'(A30,F12.5,A2)') "WALL TIME SINCE START CALL    = ", DBLE(wallEnd - wallStart) / wcRate, " s"
+    IF (measureFromStart .EQV. .FALSE.) WRITE(*,*) "WALL TIME BETWEEN ", TRIM(ADJUSTL(prevWallTag)), " AND ", TRIM(ADJUSTL(wallTag)), ": ", DBLE(wallEnd - wallPrev)  / wcRate, " s"
+    IF (measureFromStart .EQV. .TRUE.)  WRITE(*,*) "WALL TIME BETWEEN CLOCK STARTED AND ",                    TRIM(ADJUSTL(wallTag)), ": ", DBLE(wallEnd - wallStart) / wcRate, " s"
+    WRITE(*,*)
 
   END SUBROUTINE PrintWallTime
 
@@ -117,5 +87,38 @@ END SUBROUTINE MeasureCPUClock
     WRITE(*,*)
 
     END SUBROUTINE PrintTimeAndDate
+
+!*
+
+SUBROUTINE StartCPUClock
+
+  IMPLICIT NONE
+
+  CALL CPU_TIME(cpuStart)
+  cpuPrev = cpuStart
+
+END SUBROUTINE StartCPUClock
+
+!*
+
+SUBROUTINE MeasureCPUClock()
+
+  IMPLICIT NONE
+
+  cpuPrev = cpuEnd
+  CALL CPU_TIME(cpuEnd)
+
+END SUBROUTINE MeasureCPUClock
+
+!*
+
+  SUBROUTINE PrintCPUTime()
+
+    IMPLICIT NONE
+
+    WRITE(*,*) "CPU TIME SINCE PREVIOUS CALL  = ", cpuEnd - cpuPrev
+    WRITE(*,*) "CPU TIME SINCE START CALL     = ", cpuEnd - cpuStart
+
+  END SUBROUTINE PrintCPUTime
 
 END MODULE TimeTools
