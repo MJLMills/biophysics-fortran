@@ -23,3 +23,43 @@ numThreads = OMP_get_num_threads()
 dynamicAllocation = .FALSE.
 nestedParallelism = .FALSE.
 useNamelist = .TRUE.
+
+The OMPTools module is designed to allow the program to setup the OMP environment,
+print the status of its variables and print the properties of a parallel region, 
+where that latter two of these are intended for debugging and testing the
+parallelisation of the application. It consists of the following routines:
+
+  OMP_setup(exitTest)
+
+This subroutine attempts setup of the OMP environment, returning .TRUE. if no
+pathological errors are found. A log file is created called "OpenMP-Data.txt"
+which is used to store all output from the module.
+
+  OMP_check_capabilities()
+
+This subroutine tests whether dynamic allocation and nested parallelism are
+available to the user.
+
+  OMP_teardown()
+
+This subroutine cleans up the module, closing the output file.
+
+  OMP_read_namelist()
+
+This subroutine sets up the program defaults for the OMP variables that will be
+used for any variables not specified by the user. It then attempts to read the 
+namelist OMP.nml. If succesful, the values in that file are honored and program
+defaults are used for the variables. If the file is not present or not properly
+formatted, the compiler defaults will be used.
+
+  OMP_get_parallel_info(message)
+
+This subroutine tests whether the current region is parallel, and if so returns
+the information made available by the OMP API about the region. The output is 
+labelled with the message passed to the routine.
+
+  OMP_get_generatl_info(message)
+
+This subroutine prints general information about the OMP environment that is
+available to the program via the OMP API. The output is labelled with the 
+message passed to the routine.
