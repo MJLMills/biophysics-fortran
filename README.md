@@ -58,7 +58,7 @@ This subroutine tests whether the current region is parallel, and if so returns
 the information made available by the OMP API about the region. The output is 
 labelled with the message passed to the routine.
 
-  OMP_get_generatl_info(message)
+  OMP_get_general_info(message)
 
 This subroutine prints general information about the OMP environment that is
 available to the program via the OMP API. The output is labelled with the 
