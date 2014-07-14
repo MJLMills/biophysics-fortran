@@ -41,17 +41,21 @@ END SUBROUTINE CreateChemicalSystem
 
 SUBROUTINE DestroyChemicalSystem
 
-    if (allocated(BondTypes))    then; deallocate(BondTypes)    ; endif
-    if (allocated(BondIDs))      then; deallocate(BondIDs)      ; endif
-    if (allocated(AngleTypes))   then; deallocate(AngleTypes)   ; endif
-    if (allocated(AngleIDs))     then; deallocate(AngleIDs)     ; endif
-    if (allocated(TorsionTypes)) then; deallocate(TorsionTypes) ; endif
-    if (allocated(TorsionIDs))   then; deallocate(TorsionIDs)   ; endif
+    if (allocated(AtomicMasses)) deallocate(AtomicMasses)
+    if (allocated(Elements))     deallocate(Elements)
 
-    if (allocated(BondForceConstants))  then; deallocate(BondForceConstants) ; endif
-    if (allocated(BondReferences))      then; deallocate(BondReferences)     ; endif
-    if (allocated(AngleForceConstants)) then; deallocate(AngleForceConstants); endif
-    if (allocated(AngleReferences))     then; deallocate(AngleReferences)    ; endif
+    if (allocated(BondTypes))    deallocate(BondTypes)
+    if (allocated(BondIDs))      deallocate(BondIDs)
+    if (allocated(BondForceConstants))  deallocate(BondForceConstants) 
+    if (allocated(BondReferences))      deallocate(BondReferences) 
+
+    if (allocated(AngleTypes))   deallocate(AngleTypes)
+    if (allocated(AngleIDs))     deallocate(AngleIDs)
+    if (allocated(AngleForceConstants)) deallocate(AngleForceConstants) 
+    if (allocated(AngleReferences))     deallocate(AngleReferences)   
+
+    if (allocated(TorsionTypes)) deallocate(TorsionTypes)
+    if (allocated(TorsionIDs))   deallocate(TorsionIDs)
 
 END SUBROUTINE DestroyChemicalSystem
 

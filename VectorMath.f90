@@ -1,6 +1,6 @@
 MODULE VectorMath
 
-IMPLICIT NONE
+  IMPLICIT NONE
 
 CONTAINS
 
@@ -8,9 +8,9 @@ CONTAINS
 
   PURE REAL(8) FUNCTION DotProduct(p,q,n) result(pdotq); IMPLICIT NONE
 
-  integer, intent(in) :: n
-  real(8), intent(in) :: p(n), q(n)
-  integer :: i
+    integer, intent(in) :: n
+    real(8), intent(in) :: p(n), q(n)
+    integer :: i
 
     pdotq = 0.0d0
 
@@ -24,10 +24,10 @@ CONTAINS
 
   PURE REAL(8) FUNCTION EuclideanNorm(vector,n) result(r); IMPLICIT NONE
 
-  integer, intent(in) :: n
-  real(8), intent(in) :: vector(n)
+    integer, intent(in) :: n
+    real(8), intent(in) :: vector(n)
 
-   r = dsqrt(DotProduct(vector,vector,n))
+    r = dsqrt(DotProduct(vector,vector,n))
 
   END FUNCTION EuclideanNorm
 
@@ -35,9 +35,9 @@ CONTAINS
 
   PURE FUNCTION NormaliseVector(p,n); IMPLICIT NONE
 
-  integer, intent(in) :: n
-  real(8), intent(in) :: p(n)
-  real(8) :: NormaliseVector(n)
+    integer, intent(in) :: n
+    real(8), intent(in) :: p(n)
+    real(8) :: NormaliseVector(n)
 
     NormaliseVector = p(:) / EuclideanNorm(p,n)
 
@@ -47,8 +47,8 @@ CONTAINS
 
   PURE FUNCTION CrossProduct(p,q); IMPLICIT NONE
 
-  real(8), intent(in)  :: p(3), q(3)
-  real(8) :: CrossProduct(3)
+    real(8), intent(in)  :: p(3), q(3)
+    real(8) :: CrossProduct(3)
 
     CrossProduct(1) = p(2)*q(3) - p(3)*q(2)
     CrossProduct(2) = p(3)*q(1) - p(1)*q(3)

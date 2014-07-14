@@ -86,33 +86,33 @@ CONTAINS
     WRITE(*,'(A3)') "***"
     WRITE(*,*)
 
-    END SUBROUTINE PrintTimeAndDate
+  END SUBROUTINE PrintTimeAndDate
 
 !*
 
-SUBROUTINE StartCPUClock
+  SUBROUTINE StartCPUClock
 
-  IMPLICIT NONE
+    IMPLICIT NONE
 
-  CALL CPU_TIME(cpuStart)
-  cpuPrev = cpuStart
+    CALL CPU_TIME(cpuStart)
+    cpuPrev = cpuStart
 
-END SUBROUTINE StartCPUClock
-
-!*
-
-SUBROUTINE MeasureCPUClock()
-
-  IMPLICIT NONE
-
-  cpuPrev = cpuEnd
-  CALL CPU_TIME(cpuEnd)
-
-END SUBROUTINE MeasureCPUClock
+  END SUBROUTINE StartCPUClock
 
 !*
 
-  SUBROUTINE PrintCPUTime()
+  SUBROUTINE MeasureCPUClock
+
+    IMPLICIT NONE
+
+    cpuPrev = cpuEnd
+    CALL CPU_TIME(cpuEnd)
+
+  END SUBROUTINE MeasureCPUClock
+
+!*
+
+  SUBROUTINE PrintCPUTime
 
     IMPLICIT NONE
 
