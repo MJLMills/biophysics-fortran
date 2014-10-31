@@ -1,7 +1,7 @@
 biophysics-fortran
 ==================
 
-PLEASE NOTE THIS DOES NOT WORK CURRENTLY AND HA NOT BEEN WORKED ON FOR SOME TIME.
+PLEASE NOTE THIS DOES NOT WORK CURRENTLY AND HAS NOT BEEN WORKED ON FOR SOME TIME.
 
 This is the calculation engine for dynamics runs.
 
